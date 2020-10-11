@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Souhail-5/conflogt/changelog"
+	"github.com/Souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"html/template"
@@ -17,8 +17,8 @@ import (
 var unifyCmd = &cobra.Command{
 	Use:   "unify",
 	Short: "Print unified changelog entries",
-	Long: `Print unified changelog entries.`,
-	Run: unifyRun,
+	Long:  `Print unified changelog entries.`,
+	Run:   unifyRun,
 }
 
 func init() {
@@ -34,11 +34,11 @@ func init() {
 func unifyRun(cmd *cobra.Command, _ []string) {
 	files, err := entriesFiles()
 	if err != nil {
-		fmt.Println("Unable to read conflogt files.")
+		fmt.Println("Unable to read zeed files.")
 		os.Exit(1)
 	}
-	var data struct{
-		Entries []changelog.Entry
+	var data struct {
+		Entries  []changelog.Entry
 		Channels map[string]changelog.Channel
 	}
 	data.Entries, data.Channels = entries(files)
@@ -52,10 +52,10 @@ func unifyRun(cmd *cobra.Command, _ []string) {
 		tmpl, err = tmpl.Parse("{{range .Entries}}{{.Text}}\n{{end}}")
 	}
 	if err != nil {
-		fmt.Println("Unable to read conflogt template.")
+		fmt.Println("Unable to read zeed template.")
 		os.Exit(1)
 	}
-	err = tmpl.Execute(os.Stdout, data)
+	err = tmpl.Execute(cmd.OutOrStdout(), data)
 	if err != nil {
 		fmt.Println("Unable to unify.")
 		os.Exit(1)

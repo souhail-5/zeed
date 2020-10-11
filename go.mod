@@ -1,4 +1,4 @@
-module github.com/Souhail-5/conflogt
+module github.com/Souhail-5/zeed
 
 go 1.14
 

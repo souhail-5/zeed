@@ -1,22 +1,22 @@
 package changelog
 
 type File struct {
-	Name string
-	Channel string
+	Name     string
+	Channel  string
 	Priority int
-	Hash    string
-	Content string
+	Hash     string
+	Content  string
 }
 
 type Entry struct {
-	Text    string
+	Text     string
 	Priority int
-	Channel Channel
+	Channel  Channel
 }
 
 type Channel struct {
-	Id       string
-	Entries  []Entry
+	Id      string
+	Entries []Entry
 }
 
 type ByPriority []Entry

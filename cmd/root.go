@@ -1,8 +1,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
-	"github.com/Souhail-5/conflogt/changelog"
+	"github.com/Souhail-5/zeed/internal/changelog"
 	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,30 +19,33 @@ const ALPH = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 var (
 	isCfgFileLoaded bool
-	repository string
-	cchannel string
-	priority int
+	repository      string
+	cchannel        string
+	priority        int
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "conflogt",
-	Version: "1.0.0",
-	Short: "A tool to eliminate changelog-related merge conflicts",
-	Long: `Conflogt is a free and open source tool
+	Use:     "zeed",
+	Version: "1.0.0-beta",
+	Short:   "A tool to eliminate changelog-related merge conflicts",
+	Long: `Zeed is a free and open source tool
 to eliminate changelog-related merge conflicts.`,
 	Args: cobra.ExactArgs(1),
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if cmd.Use != "init" {
 			if viper.ConfigFileUsed() == "" {
-				fmt.Println("conflogt needs to be initialized in your repository.", "Did you forget to use `conflogt init`? (see `conflogt init --help` for more help and options)")
-				os.Exit(1)
+				cmd.SilenceUsage = true
+				return errors.New("zeed needs to be initialized in your repository. See `zeed init --help` for help")
 			} else if !isCfgFileLoaded {
-				fmt.Println("Unable to read your config file.")
-				os.Exit(1)
+				cmd.SilenceUsage = true
+				return errors.New("unable to read your config file")
 			}
 		}
+
+		return nil
 	},
-	Run: rootRun,
+	Run:           rootRun,
+	SilenceErrors: true, // errors are handled by cmd.Execute()
 }
 
 func rootRun(_ *cobra.Command, args []string) {
@@ -63,7 +67,7 @@ func save(file *changelog.File) error {
 	}
 	file.Hash = id
 	file.Name = strings.Join([]string{file.Channel, strconv.Itoa(file.Priority), file.Hash}, "=")
-	filePath := filepath.Join(repository, ".conflogt", file.Name)
+	filePath := filepath.Join(repository, ".zeed", file.Name)
 
 	return ioutil.WriteFile(filePath, []byte(file.Content), 0644)
 }
@@ -96,15 +100,15 @@ func initConfig() {
 		}
 		repository = wd
 		searchPath := wd
-		for ; searchPath != string(os.PathSeparator) ; searchPath = filepath.Dir(searchPath) {
-			viper.AddConfigPath(filepath.Join(searchPath, ".conflogt"))
+		for ; searchPath != string(os.PathSeparator); searchPath = filepath.Dir(searchPath) {
+			viper.AddConfigPath(filepath.Join(searchPath, ".zeed"))
 		}
-		viper.AddConfigPath(filepath.Join(searchPath, ".conflogt"))
+		viper.AddConfigPath(filepath.Join(searchPath, ".zeed"))
 	}
-	viper.SetConfigName(".conflogt")
+	viper.SetConfigName(".zeed")
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("conflogt")
+	viper.SetEnvPrefix("zeed")
 	if err := viper.ReadInConfig(); err == nil {
 		isCfgFileLoaded = true
 		repository = filepath.Dir(filepath.Dir(viper.ConfigFileUsed()))
@@ -113,9 +117,9 @@ func initConfig() {
 }
 
 func cfgDir() string {
-	return filepath.Join(repository, ".conflogt")
+	return filepath.Join(repository, ".zeed")
 }
 
 func cfgFile() string {
-	return filepath.Join(cfgDir(), ".conflogt.yaml")
+	return filepath.Join(cfgDir(), ".zeed.yaml")
 }
