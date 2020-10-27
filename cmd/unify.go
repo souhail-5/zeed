@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Souhail-5/zeed/internal/changelog"
+	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"html/template"

@@ -1,4 +1,4 @@
-module github.com/Souhail-5/zeed
+module github.com/souhail-5/zeed
 
 go 1.14
 

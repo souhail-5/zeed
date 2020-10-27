@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/Souhail-5/zeed/internal/changelog"
+	"github.com/souhail-5/zeed/internal/changelog"
 	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

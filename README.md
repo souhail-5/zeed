@@ -15,7 +15,7 @@ Zeed is written with support for multiple platforms. Zeed currently provides bin
 
 ### How to install?
 
-Download the appropriate version for your platform from [Zeed Releases](https://github.com/Souhail-5/zeed/releases). Once downloaded, the binary can be run from anywhere. You don’t need to install it into a global location. This works well for shared hosts and other systems where you don’t have a privileged account.
+Download the appropriate version for your platform from [Zeed Releases](https://github.com/souhail-5/zeed/releases). Once downloaded, the binary can be run from anywhere. You don’t need to install it into a global location. This works well for shared hosts and other systems where you don’t have a privileged account.
 
 Ideally, you should install it somewhere in your PATH for easy use. /usr/local/bin is the most probable location.
 
@@ -76,9 +76,9 @@ We will use [SemVer](http://semver.org/) for versioning.
 
 ## Maintainers
 
-* **Souhail** - [Profile](https://github.com/Souhail-5/)
+* **Souhail** - [Profile](https://github.com/souhail-5/)
 
-See also the list of [contributors](https://github.com/Souhail-5/zeed/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/souhail-5/zeed/graphs/contributors) who participated in this project.
 
 ## License
 
