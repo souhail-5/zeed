@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -39,6 +40,9 @@ to eliminate changelog-related merge conflicts.`,
 			} else if !isCfgFileLoaded {
 				cmd.SilenceUsage = true
 				return errors.New("unable to read your config file")
+			} else if err := validateConfig(viper.GetViper()); err != nil {
+				cmd.SilenceUsage = true
+				return err
 			}
 		}
 
@@ -114,6 +118,16 @@ func initConfig() {
 		repository = filepath.Dir(filepath.Dir(viper.ConfigFileUsed()))
 		fmt.Println("Running for:", repository)
 	}
+}
+
+func validateConfig(viper *viper.Viper) error {
+	for _, channel := range viper.GetStringSlice("channels") {
+		if match, _ := regexp.MatchString("^[a-z_]+$", channel); !match {
+			return errors.New(fmt.Sprintf("Invalid channel name: \"%s\". Only a-z and _ are allowed.", channel))
+		}
+	}
+
+	return nil
 }
 
 func cfgDir() string {

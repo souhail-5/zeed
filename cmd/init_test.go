@@ -41,6 +41,23 @@ func TestAlreadyInitializedProject(t *testing.T) {
 	}
 }
 
+func TestAlreadyInitializedProjectWithInvalidChannelFormat(t *testing.T) {
+	initRepository(t)
+	defer removeRepository(t)
+	err := ioutil.WriteFile(cfgFile(), []byte("channels:\n  - bad-f0rmAt"), 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rootCmd.SetArgs([]string{"init", repository})
+	if err = rootCmd.Execute(); err == nil {
+		t.Fatal("An error must occurs.")
+	}
+	expected := fmt.Sprintf("zeed is already initialized in `%s`\nInvalid channel name: \"bad-f0rmAt\". Only a-z and _ are allowed.", repository)
+	if expected != err.Error() {
+		t.Fatalf("Expected %q got %q", expected, err.Error())
+	}
+}
+
 func TestInitialization(t *testing.T) {
 	defer removeRepository(t)
 	var err error

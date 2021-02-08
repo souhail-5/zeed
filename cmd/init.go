@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 var initCmd = &cobra.Command{
@@ -24,7 +25,13 @@ All files related to zeed will be inside .zeed`,
 
 func initRun(_ *cobra.Command, _ []string) error {
 	if viper.ConfigFileUsed() != "" {
-		return errors.New(fmt.Sprintf("zeed is already initialized in `%s`", repository))
+		var errs []string
+		errs = append(errs, fmt.Sprintf("zeed is already initialized in `%s`", repository))
+		if err := validateConfig(viper.GetViper()); err != nil {
+			errs = append(errs, err.Error())
+		}
+
+		return errors.New(strings.Join(errs, "\n"))
 	}
 	err := os.MkdirAll(cfgDir(), os.ModePerm)
 	if err != nil {
