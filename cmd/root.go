@@ -20,6 +20,7 @@ const ALPH = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 var (
 	isCfgFileLoaded bool
+	verbose         bool
 	repository      string
 	cchannel        string
 	priority        int
@@ -43,6 +44,9 @@ to eliminate changelog-related merge conflicts.`,
 			} else if err := validateConfig(viper.GetViper()); err != nil {
 				cmd.SilenceUsage = true
 				return err
+			}
+			if verbose {
+				fmt.Println("Running for:", repository)
 			}
 		}
 
@@ -87,6 +91,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
 	rootCmd.Flags().StringVarP(&cchannel, "channel", "c", "undefined", "Entry's channel")
 	rootCmd.Flags().IntVarP(&priority, "priority", "p", 0, "Entry's priority")
@@ -116,7 +121,6 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		isCfgFileLoaded = true
 		repository = filepath.Dir(filepath.Dir(viper.ConfigFileUsed()))
-		fmt.Println("Running for:", repository)
 	}
 }
 
