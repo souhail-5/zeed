@@ -21,6 +21,7 @@ If no repository provided, this command will init zeed in the current directory:
 All files related to zeed will be inside .zeed`,
 	RunE:          initRun,
 	SilenceErrors: true, // errors are handled by cmd.Execute()
+	SilenceUsage:  true,
 }
 
 func initRun(_ *cobra.Command, _ []string) error {
