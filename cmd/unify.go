@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
@@ -18,7 +19,7 @@ var unifyCmd = &cobra.Command{
 	Use:   "unify",
 	Short: "Print unified changelog entries",
 	Long:  `Print unified changelog entries.`,
-	Run:   unifyRun,
+	RunE:  unifyRun,
 }
 
 func init() {
@@ -31,11 +32,10 @@ func init() {
 	}
 }
 
-func unifyRun(cmd *cobra.Command, _ []string) {
+func unifyRun(cmd *cobra.Command, _ []string) error {
 	files, err := entriesFiles()
 	if err != nil {
-		fmt.Println("Unable to read zeed files.")
-		os.Exit(1)
+		return errors.New("unable to read zeed files")
 	}
 	var data struct {
 		Entries  []changelog.Entry
@@ -52,19 +52,19 @@ func unifyRun(cmd *cobra.Command, _ []string) {
 		tmpl, err = tmpl.Parse("{{range .Entries}}{{.Text}}\n{{end}}")
 	}
 	if err != nil {
-		fmt.Println("Unable to read zeed template.")
-		os.Exit(1)
+		return errors.New("unable to read zeed template")
 	}
 	err = tmpl.Execute(cmd.OutOrStdout(), data)
 	if err != nil {
-		fmt.Println("Unable to unify.")
-		os.Exit(1)
+		return errors.New("unable to unify")
 	}
 	if shouldFlush, _ := cmd.Flags().GetBool("flush"); shouldFlush {
 		for _, file := range files {
 			os.Remove(filepath.Join(cfgDir(), file.Name))
 		}
 	}
+
+	return nil
 }
 
 func entries(files []changelog.File) ([]changelog.Entry, map[string]changelog.Channel) {
