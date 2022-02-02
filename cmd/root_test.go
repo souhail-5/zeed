@@ -42,7 +42,7 @@ func TestInvalidChannelFormat(t *testing.T) {
 	if err = rootCmd.Execute(); err == nil {
 		t.Fatal("Tested channel name must be considered invalid.")
 	}
-	expected := "Invalid channel name: \"bad-f0rmAt\". Only a-z and _ are allowed."
+	expected := "invalid channel name: \"bad-f0rmAt\" (only a-z and _ are allowed)"
 	if expected != err.Error() {
 		t.Fatalf("Expected %q got %q", expected, err.Error())
 	}

@@ -35,11 +35,11 @@ func initRun(_ *cobra.Command, _ []string) error {
 	}
 	err := os.MkdirAll(cfgDir(), os.ModePerm)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to create `%s` directory", cfgDir()))
+		return errors.New(fmt.Sprintf("unable to create `%s` directory", cfgDir()))
 	}
 	err = ioutil.WriteFile(cfgFile(), []byte(""), 0644)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to create `%s`", cfgFile()))
+		return errors.New(fmt.Sprintf("unable to create `%s`", cfgFile()))
 	}
 	initConfig()
 	fmt.Println(fmt.Sprintf("Successfully initialized zeed in `%s`", repository))

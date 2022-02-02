@@ -22,7 +22,7 @@ func TestAlreadyInitializedProject(t *testing.T) {
 	_ = os.Remove(cfgFile())
 	_ = os.Chmod(cfgDir(), 0444)
 	if err := rootCmd.Execute(); err != nil {
-		expected := fmt.Sprintf("Unable to create `%s`", cfgFile())
+		expected := fmt.Sprintf("unable to create `%s`", cfgFile())
 		if expected != err.Error() {
 			t.Fatalf("Expected %q got %q", expected, err.Error())
 		}
@@ -34,7 +34,7 @@ func TestAlreadyInitializedProject(t *testing.T) {
 		_ = os.Chmod(repository, 0777)
 	}()
 	if err := rootCmd.Execute(); err != nil {
-		expected := fmt.Sprintf("Unable to create `%s` directory", cfgDir())
+		expected := fmt.Sprintf("unable to create `%s` directory", cfgDir())
 		if expected != err.Error() {
 			t.Fatalf("Expected %q got %q", expected, err.Error())
 		}
@@ -52,7 +52,7 @@ func TestAlreadyInitializedProjectWithInvalidChannelFormat(t *testing.T) {
 	if err = rootCmd.Execute(); err == nil {
 		t.Fatal("An error must occurs.")
 	}
-	expected := fmt.Sprintf("zeed is already initialized in `%s`\nInvalid channel name: \"bad-f0rmAt\". Only a-z and _ are allowed.", repository)
+	expected := fmt.Sprintf("zeed is already initialized in `%s`\ninvalid channel name: \"bad-f0rmAt\" (only a-z and _ are allowed)", repository)
 	if expected != err.Error() {
 		t.Fatalf("Expected %q got %q", expected, err.Error())
 	}
