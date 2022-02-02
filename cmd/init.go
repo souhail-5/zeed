@@ -24,7 +24,7 @@ All files related to zeed will be inside .zeed`,
 	SilenceUsage:  true,
 }
 
-func initRun(_ *cobra.Command, _ []string) error {
+func initRun(cmd *cobra.Command, _ []string) error {
 	if viper.ConfigFileUsed() != "" {
 		var errs []string
 		errs = append(errs, fmt.Sprintf("zeed is already initialized in `%s`", repository))
@@ -43,9 +43,9 @@ func initRun(_ *cobra.Command, _ []string) error {
 		return errors.New(fmt.Sprintf("unable to create `%s`", cfgFile()))
 	}
 	initConfig()
-	fmt.Println(fmt.Sprintf("Successfully initialized zeed in `%s`", repository))
-	fmt.Println(fmt.Sprintf("A zeed config file was created (`%s`)", cfgFile()))
-	fmt.Println("Edit it according to your needs.")
+	cmd.Println(fmt.Sprintf("Successfully initialized zeed in `%s`", repository))
+	cmd.Println(fmt.Sprintf("A zeed config file was created (`%s`)", cfgFile()))
+	cmd.Println("Edit it according to your needs.")
 
 	return nil
 }

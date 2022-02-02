@@ -3,8 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/souhail-5/zeed/internal/changelog"
 	gonanoid "github.com/matoous/go-nanoid"
+	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"io/ioutil"
@@ -46,26 +46,24 @@ to eliminate changelog-related merge conflicts.`,
 				return err
 			}
 			if verbose {
-				fmt.Println("Running for:", repository)
+				cmd.Println("Running for:", repository)
 			}
 		}
 
 		return nil
 	},
-	Run:           rootRun,
+	RunE:          rootRun,
 	SilenceErrors: true, // errors are handled by cmd.Execute()
 }
 
-func rootRun(_ *cobra.Command, args []string) {
+func rootRun(_ *cobra.Command, args []string) error {
 	file := changelog.File{
 		Channel:  cchannel,
 		Priority: priority,
 		Content:  args[0],
 	}
-	err := save(&file)
-	if err != nil {
-		fmt.Println(err)
-	}
+
+	return save(&file)
 }
 
 func save(file *changelog.File) error {
@@ -84,7 +82,7 @@ func save(file *changelog.File) error {
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		rootCmd.PrintErrln(err)
 		os.Exit(1)
 	}
 }
@@ -93,8 +91,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
-	rootCmd.Flags().StringVarP(&cchannel, "channel", "c", "undefined", "Entry's channel")
-	rootCmd.Flags().IntVarP(&priority, "priority", "p", 0, "Entry's priority")
+	rootCmd.Flags().StringVarP(&cchannel, "channel", "c", "undefined", "entry's channel")
+	rootCmd.Flags().IntVarP(&priority, "priority", "p", 0, "entry's priority")
 }
 
 // initConfig reads in config file and ENV variables if set.

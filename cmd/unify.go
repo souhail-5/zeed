@@ -24,10 +24,10 @@ var unifyCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(unifyCmd)
-	unifyCmd.Flags().Bool("flush", false, "If set, entries will be removed after `unify`")
-	unifyCmd.Flags().StringP("template", "t", "", "Unify template")
+	unifyCmd.Flags().Bool("flush", false, "if set, entries will be removed after `unify`")
+	unifyCmd.Flags().StringP("template", "t", "", "unify template")
 	if err := viper.BindPFlag("template", unifyCmd.Flags().Lookup("template")); err != nil {
-		fmt.Println("Unable to get template config.")
+		rootCmd.Println("Unable to get template config.")
 		os.Exit(1)
 	}
 }
