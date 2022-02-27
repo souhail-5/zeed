@@ -1,5 +1,10 @@
 package changelog
 
+import "embed"
+
+//go:embed template
+var Templates embed.FS
+
 type File struct {
 	Name     string
 	Channel  string

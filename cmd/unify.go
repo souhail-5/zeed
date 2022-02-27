@@ -44,9 +44,13 @@ func unifyRun(cmd *cobra.Command, _ []string) error {
 	data.Entries, data.Channels = entries(files)
 
 	var tmpl *template.Template
-	if path := viper.GetString("template"); path != "" {
-		tmpl = template.New(path)
-		tmpl, err = tmpl.ParseFiles(filepath.Join(cfgDir(), path))
+	if t := viper.GetString("template"); t != "" {
+		configFS := os.DirFS(cfgDir())
+		tmpl = template.New(t)
+		tmpl, err = tmpl.ParseFS(configFS, t)
+		if err != nil {
+			tmpl, err = tmpl.ParseFS(changelog.Templates, filepath.Join("template", t))
+		}
 	} else {
 		tmpl = template.New("default")
 		tmpl, err = tmpl.Parse("{{range .Entries}}{{.Text}}\n{{end}}")
