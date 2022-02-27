@@ -27,7 +27,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "zeed",
+	Use:     "zeed <entry_text>",
+	Example: "zeed \"Add zeed config to the repository.\" -c added -p 128",
 	Version: "1.0.0-beta",
 	Short:   "A tool to eliminate changelog-related merge conflicts",
 	Long: `Zeed is a free and open source tool
