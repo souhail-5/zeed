@@ -124,7 +124,7 @@ func entriesFiles() ([]changelog.File, error) {
 			continue
 		}
 		channel := metadata[0]
-		if !contains(channels, channel) && channel != "undefined" {
+		if !changelog.Contains(channels, channel) && channel != "undefined" {
 			fmt.Println("Entry \"" + file.Name() + "\" was not processed: its channel is not supported")
 			continue
 		}
@@ -142,14 +142,4 @@ func entriesFiles() ([]changelog.File, error) {
 	}
 
 	return files, nil
-}
-
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-
-	return false
 }

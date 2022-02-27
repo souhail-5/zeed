@@ -63,6 +63,10 @@ func rootRun(_ *cobra.Command, args []string) error {
 		Content:  args[0],
 	}
 
+	if _, err := file.Validate(viper.GetViper()); err != nil {
+		return errors.New(fmt.Sprintf("provided channel (\"%s\") is not supported", file.Channel))
+	}
+
 	return save(&file)
 }
 
