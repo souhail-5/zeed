@@ -33,17 +33,20 @@ var rootCmd = &cobra.Command{
 	Short:   "A tool to eliminate changelog-related merge conflicts",
 	Long: `Zeed is a free and open source tool
 to eliminate changelog-related merge conflicts.`,
-	Args: cobra.ExactArgs(1),
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			cmd.SilenceUsage = false
+			return fmt.Errorf("accepts %d arg(s), received %d", 1, len(args))
+		}
+		return nil
+	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if cmd.Use != "init" {
 			if viper.ConfigFileUsed() == "" {
-				cmd.SilenceUsage = true
 				return errors.New("zeed needs to be initialized in your repository. See `zeed init --help` for help")
 			} else if !isCfgFileLoaded {
-				cmd.SilenceUsage = true
 				return errors.New("unable to read your config file")
 			} else if err := validateConfig(viper.GetViper()); err != nil {
-				cmd.SilenceUsage = true
 				return err
 			}
 			if verbose {
@@ -53,8 +56,8 @@ to eliminate changelog-related merge conflicts.`,
 
 		return nil
 	},
-	RunE:          rootRun,
-	SilenceErrors: true, // errors are handled by cmd.Execute()
+	RunE:         rootRun,
+	SilenceUsage: true,
 }
 
 func rootRun(_ *cobra.Command, args []string) error {
@@ -87,7 +90,6 @@ func save(file *changelog.File) error {
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		rootCmd.PrintErrln(err)
 		os.Exit(1)
 	}
 }

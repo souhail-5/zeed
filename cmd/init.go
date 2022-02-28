@@ -19,9 +19,7 @@ If no repository provided, this command will init zeed in the current directory:
 	1. create .zeed directory inside your repository
 	2. create .zeed.yaml config file inside .zeed
 All files related to zeed will be inside .zeed`,
-	RunE:          initRun,
-	SilenceErrors: true, // errors are handled by cmd.Execute()
-	SilenceUsage:  true,
+	RunE: initRun,
 }
 
 func initRun(cmd *cobra.Command, _ []string) error {
