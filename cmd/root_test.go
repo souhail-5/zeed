@@ -63,8 +63,8 @@ func TestEntry(t *testing.T) {
 		t.Fatalf("Repository must have 1 entry file, got %d (%v)", len(files), files)
 	}
 	file := files[0]
-	if file.Channel != "undefined" {
-		t.Errorf("Default channel must be %q, got %q", "undefined", file.Channel)
+	if file.Channel != "default" {
+		t.Errorf("Default channel must be %q, got %q", "default", file.Channel)
 	}
 	if file.Priority != 0 {
 		t.Errorf("Default priority must be %q, got %q", "0", file.Priority)

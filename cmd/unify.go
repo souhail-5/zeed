@@ -124,7 +124,7 @@ func entriesFiles() ([]changelog.File, error) {
 			continue
 		}
 		channel := metadata[0]
-		if !changelog.Contains(channels, channel) && channel != "undefined" {
+		if !changelog.Contains(channels, channel) && channel != "default" {
 			fmt.Println("Entry \"" + file.Name() + "\" was not processed: its channel is not supported")
 			continue
 		}

@@ -31,7 +31,7 @@ Verify your installation by running `zeed --version`
 - Copy/Paste the unified entries in your current changelog file
 
 #### How to work with channels?
-Each entry is related to a channel. The default channel is `undefined`. To add support for a channel to your project, edit `.zeed/.zeed.yaml` file that way:
+Each entry is related to a channel. The default channel is `default`. To add support for a channel to your project, edit `.zeed/.zeed.yaml` file that way:
 ``` yaml
 channels:
   - added
@@ -56,8 +56,8 @@ Add your own template by following this steps:
   - Example of content:
   ```
   {{range .Entries -}}
-  {{- if eq .Channel.Id "undefined" -}}
-  - [Undefined] {{.Text}} ({{.Priority}})
+  {{- if eq .Channel.Id "default" -}}
+  - {{.Text}} ({{.Priority}})
   {{- end}}
   {{- if eq .Channel.Id "added" -}}
   - [Added] {{.Text}} ({{.Priority}})

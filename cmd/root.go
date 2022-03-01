@@ -98,7 +98,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
-	rootCmd.Flags().StringVarP(&cchannel, "channel", "c", "undefined", "entry's channel")
+	rootCmd.Flags().StringVarP(&cchannel, "channel", "c", "default", "entry's channel")
 	rootCmd.Flags().IntVarP(&priority, "priority", "p", 0, "entry's priority")
 }
 
