@@ -48,7 +48,26 @@ func TestInvalidChannelFormat(t *testing.T) {
 	}
 }
 
+func TestUnconfiguredChannel(t *testing.T) {
+	resetFlags()
+	initRepository(t)
+	defer removeRepository(t)
+	err := ioutil.WriteFile(cfgFile(), []byte("channels: ['feature', 'bugfix']"), 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rootCmd.SetArgs([]string{"My changelog entry", "-c", "support"})
+	if err = rootCmd.Execute(); err == nil {
+		t.Fatal("Tested channel name must be considered not supported.")
+	}
+	expected := "provided channel (\"support\") is not supported"
+	if expected != err.Error() {
+		t.Fatalf("Expected %q got %q", expected, err.Error())
+	}
+}
+
 func TestEntry(t *testing.T) {
+	resetFlags()
 	initRepository(t)
 	defer removeRepository(t)
 	rootCmd.SetArgs([]string{"My changelog entry"})

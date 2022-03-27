@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/spf13/pflag"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -26,4 +27,10 @@ func removeRepository(t *testing.T) {
 	if err := os.RemoveAll(repository); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func resetFlags() {
+	rootCmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
+		flag.Value.Set(flag.DefValue)
+	})
 }
