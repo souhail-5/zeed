@@ -3,42 +3,55 @@ package changelog
 import (
 	"embed"
 	"errors"
-
+	"github.com/adrg/frontmatter"
 	"github.com/spf13/viper"
+	"io"
 )
 
 //go:embed template
 var Templates embed.FS
 
-type File struct {
-	Name     string
-	Channel  string
-	Priority int
-	Hash     string
-	Content  string
+type FrontMatter struct {
+	Channel  string `yaml:"channel"`
+	Priority int    `yaml:"priority"`
 }
 
 type Entry struct {
-	Text     string
-	Priority int
-	Channel  Channel
+	FrontMatter FrontMatter
+	Text        string
 }
 
 type Channel struct {
 	Id      string
-	Entries []Entry
+	Entries []*Entry
 }
 
-type ByPriority []Entry
+func NewEntry(r io.Reader) (*Entry, error) {
+	fm := FrontMatter{}
 
-func (entries ByPriority) Len() int           { return len(entries) }
-func (entries ByPriority) Swap(i, j int)      { entries[i], entries[j] = entries[j], entries[i] }
-func (entries ByPriority) Less(i, j int) bool { return entries[i].Priority > entries[j].Priority }
+	rest, err := frontmatter.MustParse(r, &fm)
+	if err != nil {
+		return nil, err
+	}
 
-func (file File) Validate(viper *viper.Viper) (ok bool, err error) {
+	return &Entry{
+		FrontMatter: fm,
+		Text:        string(rest),
+	}, nil
+}
+
+type ByPriority []*Entry
+
+func (entries ByPriority) Len() int      { return len(entries) }
+func (entries ByPriority) Swap(i, j int) { entries[i], entries[j] = entries[j], entries[i] }
+func (entries ByPriority) Less(i, j int) bool {
+	return entries[i].FrontMatter.Priority > entries[j].FrontMatter.Priority
+}
+
+func (e Entry) Validate(viper *viper.Viper) (ok bool, err error) {
 	channels := viper.GetStringSlice("channels")
-	if len(channels) != 0 && !Contains(channels, file.Channel) {
-		return false, errors.New("channel's file must be part of configured channels")
+	if len(channels) != 0 && !Contains(channels, e.FrontMatter.Channel) {
+		return false, errors.New("channel's entry must be part of configured channels")
 	}
 
 	return true, nil

@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -66,7 +68,7 @@ func TestUnconfiguredChannel(t *testing.T) {
 	}
 }
 
-func TestEntry(t *testing.T) {
+func TestRoot(t *testing.T) {
 	resetFlags()
 	initRepository(t)
 	defer removeRepository(t)
@@ -74,22 +76,28 @@ func TestEntry(t *testing.T) {
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	files, err := entriesFiles()
+
+	f, err := os.Open(cfgDir())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(files) != 1 {
-		t.Fatalf("Repository must have 1 entry file, got %d (%v)", len(files), files)
+	fileInfo, err := f.Readdir(-1)
+	err = f.Close()
+	if err != nil {
+		t.Fatal(err)
 	}
-	file := files[0]
-	if file.Channel != "default" {
-		t.Errorf("Default channel must be %q, got %q", "default", file.Channel)
-	}
-	if file.Priority != 0 {
-		t.Errorf("Default priority must be %q, got %q", "0", file.Priority)
-	}
-	expectedContent := "My changelog entry"
-	if file.Content != expectedContent {
-		t.Errorf("Entry file content must be %q, got %q", expectedContent, file.Content)
+	expectedContent := `---
+channel: default
+priority: 0
+---
+My changelog entry`
+	for _, file := range fileInfo {
+		if file.Name() == filepath.Base(cfgFile()) {
+			continue
+		}
+		content, _ := ioutil.ReadFile(filepath.Join(cfgDir(), file.Name()))
+		if string(content) != expectedContent {
+			t.Errorf("entry file content must be %q, got %q", expectedContent, content)
+		}
 	}
 }

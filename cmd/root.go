@@ -7,6 +7,7 @@ import (
 	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -61,29 +62,34 @@ to eliminate changelog-related merge conflicts.`,
 }
 
 func rootRun(_ *cobra.Command, args []string) error {
-	file := changelog.File{
-		Channel:  cchannel,
-		Priority: priority,
-		Content:  args[0],
+	entry := changelog.Entry{
+		FrontMatter: changelog.FrontMatter{
+			Channel:  cchannel,
+			Priority: priority,
+		},
+		Text: args[0],
 	}
 
-	if _, err := file.Validate(viper.GetViper()); err != nil {
-		return errors.New(fmt.Sprintf("provided channel (\"%s\") is not supported", file.Channel))
+	if _, err := entry.Validate(viper.GetViper()); err != nil {
+		return errors.New(fmt.Sprintf("provided channel (\"%s\") is not supported", entry.FrontMatter.Channel))
 	}
 
-	return save(&file)
+	return save(&entry)
 }
 
-func save(file *changelog.File) error {
+func save(entry *changelog.Entry) error {
 	id, err := gonanoid.Generate(ALPH, 10)
 	if err != nil {
 		return err
 	}
-	file.Hash = id
-	file.Name = strings.Join([]string{file.Channel, strconv.Itoa(file.Priority), file.Hash}, "=")
-	filePath := filepath.Join(repository, ".zeed", file.Name)
+	fileName := strings.Join([]string{entry.FrontMatter.Channel, strconv.Itoa(entry.FrontMatter.Priority), id}, "=")
+	filePath := filepath.Join(repository, ".zeed", fileName)
+	yml, err := yaml.Marshal(&entry.FrontMatter)
+	if err != nil {
+		return err
+	}
 
-	return ioutil.WriteFile(filePath, []byte(file.Content), 0644)
+	return ioutil.WriteFile(filePath, []byte(fmt.Sprintf("---\n%s---\n%s", yml, entry.Text)), 0644)
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

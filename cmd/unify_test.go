@@ -44,6 +44,6 @@ func TestUnify(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		t.Fatalf("Expected %q got %q", 1, len(files))
+		t.Fatalf("Expected %v got %v", 1, len(files))
 	}
 }
