@@ -68,6 +68,32 @@ func unifyRun(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
+func files() ([]*os.File, error) {
+	var files []*os.File
+	d, err := os.Open(cfgDir())
+	if err != nil {
+		return files, err
+	}
+	fileInfos, err := d.Readdir(-1)
+	err = d.Close()
+	if err != nil {
+		return files, err
+	}
+
+	for _, info := range fileInfos {
+		if info.Name() == filepath.Base(cfgFile()) {
+			continue
+		}
+		file, err := os.Open(filepath.Join(cfgDir(), info.Name()))
+		if err != nil {
+			return []*os.File{}, err
+		}
+		files = append(files, file)
+	}
+
+	return files, nil
+}
+
 func entries(files []*os.File) ([]*changelog.Entry, map[string]changelog.Channel) {
 	var entries []*changelog.Entry
 	var channels map[string]changelog.Channel
@@ -101,30 +127,4 @@ func entries(files []*os.File) ([]*changelog.Entry, map[string]changelog.Channel
 	}
 
 	return entries, channels
-}
-
-func files() ([]*os.File, error) {
-	var files []*os.File
-	d, err := os.Open(cfgDir())
-	if err != nil {
-		return files, err
-	}
-	fileInfos, err := d.Readdir(-1)
-	err = d.Close()
-	if err != nil {
-		return files, err
-	}
-
-	for _, info := range fileInfos {
-		if info.Name() == filepath.Base(cfgFile()) {
-			continue
-		}
-		file, err := os.Open(filepath.Join(cfgDir(), info.Name()))
-		if err != nil {
-			return []*os.File{}, err
-		}
-		files = append(files, file)
-	}
-
-	return files, nil
 }
