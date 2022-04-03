@@ -23,7 +23,7 @@ var (
 	isCfgFileLoaded bool
 	verbose         bool
 	repository      string
-	cchannel        string
+	channel         string
 	priority        int
 )
 
@@ -64,7 +64,7 @@ to eliminate changelog-related merge conflicts.`,
 func rootRun(_ *cobra.Command, args []string) error {
 	entry := changelog.Entry{
 		FrontMatter: changelog.FrontMatter{
-			Channel:  cchannel,
+			Channel:  channel,
 			Priority: priority,
 		},
 		Text: args[0],
@@ -104,7 +104,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
-	rootCmd.Flags().StringVarP(&cchannel, "channel", "c", "default", "entry's channel")
+	rootCmd.Flags().StringVarP(&channel, "channel", "c", "default", "entry's channel")
 	rootCmd.Flags().IntVarP(&priority, "priority", "p", 0, "entry's priority")
 }
 
