@@ -24,7 +24,7 @@ var (
 	verbose         bool
 	repository      string
 	channel         string
-	priority        int
+	weight          int
 )
 
 var rootCmd = &cobra.Command{
@@ -64,8 +64,8 @@ to eliminate changelog-related merge conflicts.`,
 func rootRun(_ *cobra.Command, args []string) error {
 	entry := changelog.Entry{
 		FrontMatter: changelog.FrontMatter{
-			Channel:  channel,
-			Priority: priority,
+			Channel: channel,
+			Weight:  weight,
 		},
 		Text: args[0],
 	}
@@ -82,7 +82,7 @@ func save(entry *changelog.Entry) error {
 	if err != nil {
 		return err
 	}
-	fileName := strings.Join([]string{entry.FrontMatter.Channel, strconv.Itoa(entry.FrontMatter.Priority), id}, "=")
+	fileName := strings.Join([]string{entry.FrontMatter.Channel, strconv.Itoa(entry.FrontMatter.Weight), id}, "=")
 	filePath := filepath.Join(repository, ".zeed", fileName)
 	yml, err := yaml.Marshal(&entry.FrontMatter)
 	if err != nil {
@@ -105,7 +105,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
 	rootCmd.Flags().StringVarP(&channel, "channel", "c", "default", "entry's channel")
-	rootCmd.Flags().IntVarP(&priority, "priority", "p", 0, "entry's priority")
+	rootCmd.Flags().IntVarP(&weight, "weight", "p", 0, "entry's weight")
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -9,14 +9,14 @@ import (
 func TestNewEntry(t *testing.T) {
 	r := strings.NewReader(`---
 channel: default
-priority: 64
+weight: 64
 ---
 My changelog entry`)
 
 	ee := &Entry{
 		FrontMatter: FrontMatter{
-			Channel:  "default",
-			Priority: 64,
+			Channel: "default",
+			Weight:  64,
 		},
 		Text: "My changelog entry",
 	}

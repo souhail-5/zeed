@@ -88,7 +88,7 @@ func TestRoot(t *testing.T) {
 	}
 	expectedContent := `---
 channel: default
-priority: 0
+weight: 0
 ---
 My changelog entry`
 	for _, file := range fileInfo {

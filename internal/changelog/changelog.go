@@ -12,8 +12,8 @@ import (
 var Templates embed.FS
 
 type FrontMatter struct {
-	Channel  string `yaml:"channel"`
-	Priority int    `yaml:"priority"`
+	Channel string `yaml:"channel"`
+	Weight  int    `yaml:"weight"`
 }
 
 type Entry struct {
@@ -40,12 +40,12 @@ func NewEntry(r io.Reader) (*Entry, error) {
 	}, nil
 }
 
-type ByPriority []*Entry
+type ByWeight []*Entry
 
-func (entries ByPriority) Len() int      { return len(entries) }
-func (entries ByPriority) Swap(i, j int) { entries[i], entries[j] = entries[j], entries[i] }
-func (entries ByPriority) Less(i, j int) bool {
-	return entries[i].FrontMatter.Priority > entries[j].FrontMatter.Priority
+func (entries ByWeight) Len() int      { return len(entries) }
+func (entries ByWeight) Swap(i, j int) { entries[i], entries[j] = entries[j], entries[i] }
+func (entries ByWeight) Less(i, j int) bool {
+	return entries[i].FrontMatter.Weight > entries[j].FrontMatter.Weight
 }
 
 func (e Entry) Validate(viper *viper.Viper) (ok bool, err error) {
