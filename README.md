@@ -1,10 +1,10 @@
 # Zeed
 Zeed is a free and open source tool to eliminate changelog-related merge conflicts. Team collaboration and continuous integration will be easier.
 
-**How it works?** Use Zeed to add any entry to your changelog. Zeed will not modify your changelog file, but save your entries as a file within a staging area. When your are ready, you ask zeed to unify all staged entries, and render them according to a template. Copy/Paste the rendering to your changelog file. Use Zeed to delete the staged entries and start over for another release.
+**How it works?** Use Zeed to add any entry to your changelog. Zeed will not modify your changelog file, but save your entries as a file within a staging area. When you are ready, you ask Zeed to unify all staged entries, and render them according to a template. Copy/Paste the rendering to your changelog file. Use Zeed to delete the staged entries and start over for another release.
 
 ## Getting Started
-These instructions will get you zeed up and running on your local machine.
+These instructions will get you Zeed up and running on your local machine.
 
 ### Technical prerequisites
 Zeed is written with support for multiple platforms. Zeed currently provides binaries for the following:
@@ -15,23 +15,33 @@ Zeed is written with support for multiple platforms. Zeed currently provides bin
 
 ### How to install?
 
-Download the appropriate version for your platform from [Zeed Releases](https://github.com/souhail-5/zeed/releases). Once downloaded, the binary can be run from anywhere. You don’t need to install it into a global location. This works well for shared hosts and other systems where you don’t have a privileged account.
+Download the appropriate version for your platform from [Zeed Releases](https://github.com/souhail-5/zeed/releases). Once downloaded, the binary can be run from anywhere.
 
-Ideally, you should install it somewhere in your PATH for easy use. /usr/local/bin is the most probable location.
+Ideally, you should install it somewhere in your `PATH` for easy use. `/usr/local/bin` is the most probable location.
 
 Verify your installation by running `zeed --version`
 
 ## Basic Usage
 
-- Init zeed within your project `zeed init`
+- Init Zeed within your project `zeed init`
 - Add an entry `zeed "I am a changelog entry"`
 - Add another entry `zeed "All changelog entries are saved within <your_project_dir>/.zeed/"`
 - Unify the entries `zeed unify`
 - Unify then delete the entries `zeed unify --flush`
 - Copy/Paste the unified entries in your current changelog file
 
-#### How to work with channels?
-Each entry is related to a channel. The default channel is `default`. To add support for a channel to your project, edit `.zeed/.zeed.yaml` file that way:
+### How to work with weights?
+Entries are sorted in descending order. Weights serve to sort the entries. Each entry is given a weight. The default given weight is `0`.
+
+To give a specific weight to an entry, set the `--weight` (or `-w`) option when adding an entry: `zeed "I am a changelog entry" --weight 64`.
+
+### How to work with channels?
+Channels serve to group the entries. Each entry is attached to a channel. The default attached channel is `default`.
+
+To attach a specific channel to an entry, set the `--channel` (or `-c`) option when adding an entry: `zeed "I am a changelog entry" --channel name_of_your_channel`. Only channels supported by your project are allowed.
+
+#### How to add your own channel?
+To add support for a channel in your project, edit `.zeed/.zeed.yaml` file that way:
 ``` yaml
 channels:
   - added
@@ -42,29 +52,46 @@ channels:
   - security
   - name_of_your_channel # Only a-z and _ are allowed
 ```
-Channels serve to group your entries and it will be useful for templates.
 
-#### How to work with templates?
-Templates serve to customize the rendering of `unify` command.
+Channels serve to group the entries, so it will be useful for templates.
 
-Templates must use [Go templating engine](https://golang.org/pkg/text/template/). They have access to this fields :
-- Entries (list of all entries)
-- Channels (list of all entries grouped by channel)
+### How to work with templates?
+Templates serve to customize the rendering of the unified entries. The template used by default is `default`.
 
-Add your own template by following this steps:
-- create a file within `.zeed` directory
-  - Example of content:
-  ```
-  {{range .Entries -}}
-  {{- if eq .Channel.Id "default" -}}
-  - {{.Text}} ({{.Priority}})
-  {{- end}}
-  {{- if eq .Channel.Id "added" -}}
-  - [Added] {{.Text}} ({{.Priority}})
-  {{- end}}
-  {{end -}}
-  ```
-- Use your new file as a template when you unify `zeed unify --template filename`
+To unify the entries with a specific template, set the `--template` (or `-t`) option when unifying the entries: `zeed unify --template name_of_the_template`. Only templates supported by your project are allowed.
+
+Zeed comes with built-in allowed templates:
+- `default`: one line for each entry
+- `keepachangelog`: compliant with the [keepachangelog.com](https://keepachangelog.com/) format
+
+#### How to add your own template?
+Templates must use [Go templating engine](https://golang.org/pkg/text/template/). They have access to these data :
+- `Entries`: list of all entries. Each entry include these fields:
+  - `Text`: entry's text
+  - `FrontMatter`: entry's metadata
+    - `Channel`: entry's channel
+    - `Weight`: entry's weight
+- `Channels`: list of all entries grouped by channel name
+
+To add your own template, edit `.zeed/.zeed.yaml` file that way:
+``` yaml
+templates:
+  default: "{{range .Entries}}• {{.Text}}\n{{end}}" # overrides the built-in "default" template
+  slack: |-
+    *What's new?*
+    {{range .Entries -}}
+    - {{.Text}}
+    {{end}}
+  name_of_the_template: |
+    {{range .Entries -}}
+    {{- if eq .FrontMatter.Channel "default" -}}
+    - {{.Text}} ({{.FrontMatter.Weight}})
+    {{- end}}
+    {{- if eq .FrontMatter.Channel "added" -}}
+    - [Added] {{.Text}} ({{.FrontMatter.Weight}})
+    {{- end}}
+    {{end -}}
+```
 
 ## Contributing
 
