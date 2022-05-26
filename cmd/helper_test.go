@@ -17,8 +17,11 @@ func initRepository(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = ioutil.WriteFile(cfgFile(), []byte(""), 0644)
-	if err != nil {
+	writeCfgFile(t, []byte(""))
+}
+
+func writeCfgFile(t *testing.T, data []byte) {
+	if err := ioutil.WriteFile(cfgFile(), data, 0644); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -31,6 +34,12 @@ func removeRepository(t *testing.T) {
 
 func resetFlags() {
 	rootCmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
+		flag.Value.Set(flag.DefValue)
+	})
+	initCmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
+		flag.Value.Set(flag.DefValue)
+	})
+	unifyCmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
 		flag.Value.Set(flag.DefValue)
 	})
 }

@@ -23,10 +23,6 @@ func init() {
 	rootCmd.AddCommand(unifyCmd)
 	unifyCmd.Flags().Bool("flush", false, "if set, entries will be removed after `unify`")
 	unifyCmd.Flags().StringP("template", "t", "default", "unify template")
-	if err := viper.BindPFlag("template", unifyCmd.Flags().Lookup("template")); err != nil {
-		rootCmd.Println("Unable to get template config.")
-		os.Exit(1)
-	}
 }
 
 func unifyRun(cmd *cobra.Command, _ []string) error {
@@ -40,14 +36,17 @@ func unifyRun(cmd *cobra.Command, _ []string) error {
 	}
 	data.Entries, data.Channels = entries(files)
 
-	t := viper.GetString("template")
-	configFS := os.DirFS(cfgDir())
-	tmpl := template.New(t)
-	tmpl, err = tmpl.ParseFS(configFS, t)
+	k, err := cmd.Flags().GetString("template")
 	if err != nil {
-		tmpl, err = tmpl.ParseFS(changelog.Templates, filepath.Join("template", t))
+		return errors.New("unable to read template flag")
+	}
+	s := viper.GetString("templates." + k)
+	tmpl := template.New(k)
+	tmpl, err = tmpl.Parse(s)
+	if err != nil || s == "" {
+		tmpl, err = tmpl.ParseFS(changelog.Templates, filepath.Join("template", k))
 		if err != nil {
-			return errors.New("unable to read zeed template")
+			return errors.New("provided zeed template not found")
 		}
 	}
 	err = tmpl.Execute(cmd.OutOrStdout(), data)

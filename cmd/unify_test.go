@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"testing"
 )
@@ -50,9 +49,10 @@ func TestUnify(t *testing.T) {
 }
 
 func TestUnifyWithTemplate(t *testing.T) {
+	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte("channels: [added, security]"))
 	defer removeRepository(t)
-	viper.Set("channels", []string{"added", "security"})
 	bufferString := bytes.NewBufferString("")
 	rootCmd.SetOut(bufferString)
 	rootCmd.SetArgs([]string{"My changelog entry #1", "-c", "added"})
@@ -89,6 +89,45 @@ func TestUnifyWithTemplate(t *testing.T) {
 ### Security
 - My changelog entry #3
 
+`
+	if expected != string(out) {
+		t.Fatalf("Expected %q got %q", expected, string(out))
+	}
+}
+
+func TestUnifyWithConfiguredTemplate(t *testing.T) {
+	resetFlags()
+	initRepository(t)
+	writeCfgFile(t, []byte(`templates:
+  default: "{{range .Entries}}• {{.Text}}\n{{end}}"
+`))
+	defer removeRepository(t)
+	bufferString := bytes.NewBufferString("")
+	rootCmd.SetOut(bufferString)
+	rootCmd.SetArgs([]string{"My changelog entry #1"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+	rootCmd.SetArgs([]string{"My changelog entry #2", "-p", fmt.Sprintf("%d", 32)})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+	rootCmd.SetArgs([]string{"My changelog entry #3", "-p", fmt.Sprintf("%d", 16)})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+	rootCmd.SetArgs([]string{"unify"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	out, err := ioutil.ReadAll(bufferString)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := `• My changelog entry #2
+• My changelog entry #3
+• My changelog entry #1
 `
 	if expected != string(out) {
 		t.Fatalf("Expected %q got %q", expected, string(out))
