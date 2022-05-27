@@ -46,7 +46,7 @@ func unifyRun(cmd *cobra.Command, _ []string) error {
 	if err != nil || s == "" {
 		tmpl, err = tmpl.ParseFS(changelog.Templates, filepath.Join("template", k))
 		if err != nil {
-			return errors.New("provided zeed template not found")
+			return errors.New(fmt.Sprintf("provided template (\"%s\") is not supported", k))
 		}
 	}
 	err = tmpl.Execute(cmd.OutOrStdout(), data)

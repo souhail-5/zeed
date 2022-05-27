@@ -44,15 +44,31 @@ func TestAlreadyInitializedProject(t *testing.T) {
 func TestAlreadyInitializedProjectWithInvalidChannelFormat(t *testing.T) {
 	initRepository(t)
 	defer removeRepository(t)
-	err := ioutil.WriteFile(cfgFile(), []byte("channels:\n  - bad-f0rmAt"), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
+	writeCfgFile(t, []byte("channels:\n  - bad-f0rmAt"))
 	rootCmd.SetArgs([]string{"init", repository})
-	if err = rootCmd.Execute(); err == nil {
-		t.Fatal("An error must occurs.")
+	err := rootCmd.Execute()
+	if err == nil {
+		t.Fatal("Tested initialization should fail because an invalid channel name is in the config file.")
 	}
 	expected := fmt.Sprintf("zeed is already initialized in `%s`\ninvalid channel name: \"bad-f0rmAt\" (only a-z and _ are allowed)", repository)
+	if expected != err.Error() {
+		t.Fatalf("Expected %q got %q", expected, err.Error())
+	}
+}
+
+func TestAlreadyInitializedProjectWithInvalidTemplateFormat(t *testing.T) {
+	initRepository(t)
+	defer removeRepository(t)
+	writeCfgFile(t, []byte(`templates:
+  bad-f0rmAt: "{{range .Entries}}- {{.Text}}\n{{end}}"
+`))
+	rootCmd.SetArgs([]string{"init", repository})
+	err := rootCmd.Execute()
+	if err == nil {
+		t.Fatal("Tested initialization should fail because an invalid template name is in the config file.")
+	}
+	// TODO https://github.com/souhail-5/zeed/issues/16
+	expected := fmt.Sprintf("zeed is already initialized in `%s`\ninvalid template name: \"bad-f0rmat\" (only a-z and _ are allowed)", repository)
 	if expected != err.Error() {
 		t.Fatalf("Expected %q got %q", expected, err.Error())
 	}

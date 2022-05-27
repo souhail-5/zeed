@@ -136,9 +136,14 @@ func initConfig() {
 }
 
 func validateConfig(viper *viper.Viper) error {
-	for _, channel := range viper.GetStringSlice("channels") {
-		if match, _ := regexp.MatchString("^[a-z_]+$", channel); !match {
-			return errors.New(fmt.Sprintf("invalid channel name: \"%s\" (only a-z and _ are allowed)", channel))
+	for _, cn := range viper.GetStringSlice("channels") {
+		if match, _ := regexp.MatchString("^[a-z_]+$", cn); !match {
+			return errors.New(fmt.Sprintf("invalid channel name: \"%s\" (only a-z and _ are allowed)", cn))
+		}
+	}
+	for tn, _ := range viper.GetStringMap("templates") {
+		if match, _ := regexp.MatchString("^[a-z_]+$", tn); !match {
+			return errors.New(fmt.Sprintf("invalid template name: \"%s\" (only a-z and _ are allowed)", tn))
 		}
 	}
 

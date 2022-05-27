@@ -51,8 +51,8 @@ func TestUnify(t *testing.T) {
 func TestUnifyWithTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
-	writeCfgFile(t, []byte("channels: [added, security]"))
 	defer removeRepository(t)
+	writeCfgFile(t, []byte("channels: [added, security]"))
 	bufferString := bytes.NewBufferString("")
 	rootCmd.SetOut(bufferString)
 	rootCmd.SetArgs([]string{"My changelog entry #1", "-c", "added"})
@@ -98,10 +98,10 @@ func TestUnifyWithTemplate(t *testing.T) {
 func TestUnifyWithConfiguredTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	defer removeRepository(t)
 	writeCfgFile(t, []byte(`templates:
   default: "{{range .Entries}}• {{.Text}}\n{{end}}"
 `))
-	defer removeRepository(t)
 	bufferString := bytes.NewBufferString("")
 	rootCmd.SetOut(bufferString)
 	rootCmd.SetArgs([]string{"My changelog entry #1"})
@@ -131,5 +131,23 @@ func TestUnifyWithConfiguredTemplate(t *testing.T) {
 `
 	if expected != string(out) {
 		t.Fatalf("Expected %q got %q", expected, string(out))
+	}
+}
+
+func TestUnifyWithUnconfiguredTemplate(t *testing.T) {
+	resetFlags()
+	initRepository(t)
+	defer removeRepository(t)
+	writeCfgFile(t, []byte(`templates:
+  default: "{{range .Entries}}- {{.Text}}\n{{end}}"
+`))
+	rootCmd.SetArgs([]string{"unify", "-t", "slack"})
+	err := rootCmd.Execute()
+	if err == nil {
+		t.Fatal("Tested template name must be considered not supported.")
+	}
+	expected := "provided template (\"slack\") is not supported"
+	if expected != err.Error() {
+		t.Fatalf("Expected %q got %q", expected, err.Error())
 	}
 }

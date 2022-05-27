@@ -20,10 +20,7 @@ func TestNotInitializedProject(t *testing.T) {
 func TestInvalidCfgFile(t *testing.T) {
 	initRepository(t)
 	defer removeRepository(t)
-	err := ioutil.WriteFile(cfgFile(), []byte("invalid\nyaml"), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
+	writeCfgFile(t, []byte("invalid\nyaml"))
 	rootCmd.SetArgs([]string{"My changelog entry"})
 	if err := rootCmd.Execute(); err != nil {
 		expected := "unable to read your config file"
@@ -36,12 +33,10 @@ func TestInvalidCfgFile(t *testing.T) {
 func TestInvalidChannelFormat(t *testing.T) {
 	initRepository(t)
 	defer removeRepository(t)
-	err := ioutil.WriteFile(cfgFile(), []byte("channels:\n  - bad-f0rmAt"), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
+	writeCfgFile(t, []byte("channels:\n  - bad-f0rmAt"))
 	rootCmd.SetArgs([]string{"My changelog entry"})
-	if err = rootCmd.Execute(); err == nil {
+	err := rootCmd.Execute()
+	if err == nil {
 		t.Fatal("Tested channel name must be considered invalid.")
 	}
 	expected := "invalid channel name: \"bad-f0rmAt\" (only a-z and _ are allowed)"
@@ -54,15 +49,32 @@ func TestUnconfiguredChannel(t *testing.T) {
 	resetFlags()
 	initRepository(t)
 	defer removeRepository(t)
-	err := ioutil.WriteFile(cfgFile(), []byte("channels: ['feature', 'bugfix']"), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
+	writeCfgFile(t, []byte("channels: ['feature', 'bugfix']"))
 	rootCmd.SetArgs([]string{"My changelog entry", "-c", "support"})
-	if err = rootCmd.Execute(); err == nil {
+	err := rootCmd.Execute()
+	if err == nil {
 		t.Fatal("Tested channel name must be considered not supported.")
 	}
 	expected := "provided channel (\"support\") is not supported"
+	if expected != err.Error() {
+		t.Fatalf("Expected %q got %q", expected, err.Error())
+	}
+}
+
+func TestInvalidTemplateFormat(t *testing.T) {
+	resetFlags()
+	initRepository(t)
+	defer removeRepository(t)
+	writeCfgFile(t, []byte(`templates:
+  bad-f0rmAt: "{{range .Entries}}- {{.Text}}\n{{end}}"
+`))
+	rootCmd.SetArgs([]string{"My changelog entry"})
+	err := rootCmd.Execute()
+	if err == nil {
+		t.Fatal("Tested template name must be considered invalid.")
+	}
+	// TODO https://github.com/souhail-5/zeed/issues/16
+	expected := "invalid template name: \"bad-f0rmat\" (only a-z and _ are allowed)"
 	if expected != err.Error() {
 		t.Fatalf("Expected %q got %q", expected, err.Error())
 	}
