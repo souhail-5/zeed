@@ -16,7 +16,7 @@ func TestUnify(t *testing.T) {
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	rootCmd.SetArgs([]string{"My changelog entry #2", "-p", fmt.Sprintf("%d", 32)})
+	rootCmd.SetArgs([]string{"My changelog entry #2", "-w", fmt.Sprintf("%d", 32)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestUnifyWithTemplate(t *testing.T) {
 	}
 	rootCmd.SetArgs([]string{
 		"My changelog entry #2",
-		"-p",
+		"-w",
 		fmt.Sprintf("%d", 32),
 		"-c",
 		"added",
@@ -108,11 +108,11 @@ func TestUnifyWithConfiguredTemplate(t *testing.T) {
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	rootCmd.SetArgs([]string{"My changelog entry #2", "-p", fmt.Sprintf("%d", 32)})
+	rootCmd.SetArgs([]string{"My changelog entry #2", "-w", fmt.Sprintf("%d", 32)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	rootCmd.SetArgs([]string{"My changelog entry #3", "-p", fmt.Sprintf("%d", 16)})
+	rootCmd.SetArgs([]string{"My changelog entry #3", "-w", fmt.Sprintf("%d", 16)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}

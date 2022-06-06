@@ -29,7 +29,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:     "zeed <entry_text>",
-	Example: "zeed \"Add zeed config to the repository.\" -c added -p 128",
+	Example: "zeed \"Add zeed config to the repository.\" -c added -w 128",
 	Version: "1.0.0-beta",
 	Short:   "A tool to eliminate changelog-related merge conflicts",
 	Long: `Zeed is a free and open source tool
@@ -105,7 +105,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
 	rootCmd.Flags().StringVarP(&channel, "channel", "c", "default", "entry's channel")
-	rootCmd.Flags().IntVarP(&weight, "weight", "p", 0, "entry's weight")
+	rootCmd.Flags().IntVarP(&weight, "weight", "w", 0, "entry's weight")
 }
 
 // initConfig reads in config file and ENV variables if set.
