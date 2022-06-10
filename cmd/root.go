@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"crypto/rand"
 	"errors"
 	"fmt"
-	gonanoid "github.com/matoous/go-nanoid"
+	"github.com/oklog/ulid/v2"
 	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -12,12 +13,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
-	"strings"
+	"time"
 )
-
-// const improve performance
-const ALPH = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 var (
 	isCfgFileLoaded bool
@@ -78,12 +75,11 @@ func rootRun(_ *cobra.Command, args []string) error {
 }
 
 func save(entry *changelog.Entry) error {
-	id, err := gonanoid.Generate(ALPH, 10)
+	id, err := ulid.New(ulid.Timestamp(time.Now()), rand.Reader)
 	if err != nil {
 		return err
 	}
-	fileName := strings.Join([]string{entry.FrontMatter.Channel, strconv.Itoa(entry.FrontMatter.Weight), id}, "=")
-	filePath := filepath.Join(repository, ".zeed", fileName)
+	filePath := filepath.Join(repository, ".zeed", id.String())
 	yml, err := yaml.Marshal(&entry.FrontMatter)
 	if err != nil {
 		return err
@@ -141,7 +137,7 @@ func validateConfig(viper *viper.Viper) error {
 			return errors.New(fmt.Sprintf("invalid channel name: \"%s\" (only a-z and _ are allowed)", cn))
 		}
 	}
-	for tn, _ := range viper.GetStringMap("templates") {
+	for tn := range viper.GetStringMap("templates") {
 		if match, _ := regexp.MatchString("^[a-z_]+$", tn); !match {
 			return errors.New(fmt.Sprintf("invalid template name: \"%s\" (only a-z and _ are allowed)", tn))
 		}
