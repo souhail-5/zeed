@@ -19,9 +19,9 @@ Download the appropriate version for your platform from [Zeed Releases](https://
 
 Ideally, you should install it somewhere in your `PATH` for easy use. `/usr/local/bin` is the most probable location.
 
-Verify your installation by running `zeed --version`
+Verify your installation by running `zeed --version`.
 
-## Basic Usage
+## Basic usage
 
 - Init Zeed within your project `zeed init`
 - Add an entry `zeed "I am a changelog entry"`
@@ -30,8 +30,12 @@ Verify your installation by running `zeed --version`
 - Unify then delete the entries `zeed unify --flush`
 - Copy/Paste the unified entries in your current changelog file
 
+## Advanced usage
+
+The following sections outline advanced usage topics: weights, channels and templates.
+
 ### How to work with weights?
-Entries are sorted in descending order. Weights serve to sort the entries. Each entry is given a weight. The default given weight is `0`.
+Weights serve to sort the entries. Each entry is given a weight. The default given weight is `0`. Entries are sorted in descending order.
 
 To give a specific weight to an entry, set the `--weight` (or `-w`) option when adding an entry: `zeed "I am a changelog entry" --weight 64`.
 
@@ -99,7 +103,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-We will use [SemVer](http://semver.org/) for versioning.
+We use [SemVer](http://semver.org/) for versioning.
 
 ## Maintainers
 
