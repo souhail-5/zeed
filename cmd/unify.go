@@ -1,15 +1,23 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"html/template"
+	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
+)
+
+var (
+	aline string
+	bline string
 )
 
 var unifyCmd = &cobra.Command{
@@ -23,6 +31,8 @@ func init() {
 	rootCmd.AddCommand(unifyCmd)
 	unifyCmd.Flags().Bool("flush", false, "if set, entries will be removed after `unify`")
 	unifyCmd.Flags().StringP("template", "t", "default", "unify template")
+	unifyCmd.Flags().StringVarP(&aline, "aline", "a", "", "the line after which the unified entries will be pasted")
+	unifyCmd.Flags().StringVarP(&bline, "bline", "b", "", "the line before which the unified entries will be pasted")
 }
 
 func unifyRun(cmd *cobra.Command, _ []string) error {
@@ -49,13 +59,63 @@ func unifyRun(cmd *cobra.Command, _ []string) error {
 			return errors.New(fmt.Sprintf("provided template (\"%s\") is not supported", k))
 		}
 	}
-	err = tmpl.Execute(cmd.OutOrStdout(), data)
+	unifiedText := bytes.Buffer{}
+	mw := io.MultiWriter(&unifiedText, cmd.OutOrStdout())
+	err = tmpl.Execute(mw, data)
 	if err != nil {
 		return errors.New("unable to unify")
 	}
+
+	err = uChangelog(filepath.Join(repository, "CHANGELOG.md"), unifiedText.String(), aline, bline)
+	if err != nil {
+		return err
+	}
+
 	if shouldFlush, _ := cmd.Flags().GetBool("flush"); shouldFlush {
 		for _, file := range files {
-			os.Remove(file.Name())
+			err = os.Remove(file.Name())
+		}
+		if err != nil {
+			return errors.New("unable to remove all the entries")
+		}
+	}
+
+	return nil
+}
+
+func uChangelog(filename string, unifiedText string, aline string, bline string) error {
+	content, err := os.ReadFile(filename)
+	if err != nil {
+		return errors.New("unable to read the changelog file")
+	}
+
+	var re string
+	var repl []byte
+
+	if aline != "" && bline == "" {
+		re = fmt.Sprintf(`(?s)^(.*?\n?)(?-s)(.*%s.*\n?)(?s)(.*)`, aline)
+		repl = []byte(fmt.Sprintf(`${1}${2}%s${3}`, unifiedText))
+	}
+
+	if bline != "" && aline == "" {
+		re = fmt.Sprintf(`(?s)^(.*?\n?)(?-s)(.*%s.*\n?)(?s)(.*)`, bline)
+		repl = []byte(fmt.Sprintf(`${1}%s${2}${3}`, unifiedText))
+	}
+
+	if aline != "" && bline != "" {
+		re = fmt.Sprintf(`(?s)^(.*?\n?)(?-s)(.*%s.*\n?)(?s)(.*?\n?)(?-s)(.*%s.*\n?)(?s)(.*)`, aline, bline)
+		repl = []byte(fmt.Sprintf(`${1}${2}%s${4}${5}`, unifiedText))
+	}
+
+	if aline != "" || bline != "" {
+		r, err := regexp.Compile(re)
+		if err != nil {
+			return errors.New("unable to compile the regex with aline flag")
+		}
+		content = r.ReplaceAll(content, repl)
+		err = os.WriteFile(filename, content, 0644)
+		if err != nil {
+			return errors.New("unable to write the changelog file")
 		}
 	}
 

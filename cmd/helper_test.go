@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/pflag"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -18,10 +19,17 @@ func initRepository(t *testing.T) {
 		t.Fatal(err)
 	}
 	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 }
 
 func writeCfgFile(t *testing.T, data []byte) {
 	if err := ioutil.WriteFile(cfgFile(), data, 0644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeChangelogFile(t *testing.T, data []byte) {
+	if err := ioutil.WriteFile(filepath.Join(repository, "CHANGELOG.md"), data, 0644); err != nil {
 		t.Fatal(err)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"testing"
 )
 
@@ -138,9 +139,6 @@ func TestUnifyWithUnconfiguredTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
 	defer removeRepository(t)
-	writeCfgFile(t, []byte(`templates:
-  default: "{{range .Entries}}- {{.Text}}\n{{end}}"
-`))
 	rootCmd.SetArgs([]string{"unify", "-t", "slack"})
 	err := rootCmd.Execute()
 	if err == nil {
@@ -149,5 +147,171 @@ func TestUnifyWithUnconfiguredTemplate(t *testing.T) {
 	expected := "provided template (\"slack\") is not supported"
 	if expected != err.Error() {
 		t.Fatalf("Expected %q got %q", expected, err.Error())
+	}
+}
+
+func TestUnifyAline(t *testing.T) {
+	resetFlags()
+	initRepository(t)
+	defer removeRepository(t)
+	writeChangelogFile(t, []byte(`# Changelog
+A short introduction
+
+## Version Carabaffe
+- lorem ipsum
+
+## Version Carapuce
+- lorem ipsum
+- lorem ipsum
+`))
+	rootCmd.SetArgs([]string{"--", "- lorem ipsum"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"## Version Tortank", "-w", fmt.Sprintf("%d", 32)})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"", "-w", fmt.Sprintf("%d", 64)})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"unify", "-a", "A short introduction"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	expected := `# Changelog
+A short introduction
+
+## Version Tortank
+- lorem ipsum
+
+## Version Carabaffe
+- lorem ipsum
+
+## Version Carapuce
+- lorem ipsum
+- lorem ipsum
+`
+	c, err := ioutil.ReadFile(filepath.Join(repository, "CHANGELOG.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if expected != string(c) {
+		t.Fatalf("Expected %q got %q", expected, c)
+	}
+}
+
+func TestUnifyBline(t *testing.T) {
+	resetFlags()
+	initRepository(t)
+	defer removeRepository(t)
+	writeChangelogFile(t, []byte(`# Changelog
+A short introduction
+
+## Version Carabaffe
+- lorem ipsum
+
+## Version Carapuce
+- lorem ipsum
+- lorem ipsum
+`))
+	rootCmd.SetArgs([]string{"--", "- lorem ipsum"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"## Version Tortank", "-w", fmt.Sprintf("%d", 32)})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"", "-w", fmt.Sprintf("%d", -32)})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"unify", "-b", "## Version"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	expected := `# Changelog
+A short introduction
+
+## Version Tortank
+- lorem ipsum
+
+## Version Carabaffe
+- lorem ipsum
+
+## Version Carapuce
+- lorem ipsum
+- lorem ipsum
+`
+	c, err := ioutil.ReadFile(filepath.Join(repository, "CHANGELOG.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if expected != string(c) {
+		t.Fatalf("Expected %q got %q", expected, c)
+	}
+}
+
+func TestUnifyAlineBline(t *testing.T) {
+	resetFlags()
+	initRepository(t)
+	defer removeRepository(t)
+	writeChangelogFile(t, []byte(`# Changelog
+A short introduction
+
+## Unreleased
+Nothing here.
+
+## Version Carabaffe
+- lorem ipsum
+
+## Version Carapuce
+- lorem ipsum
+- lorem ipsum
+`))
+	rootCmd.SetArgs([]string{"--", "- lorem ipsum"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"", "-w", fmt.Sprintf("%d", -32)})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	rootCmd.SetArgs([]string{"unify", "-a", "## Unreleased", "-b", "## Version"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	expected := `# Changelog
+A short introduction
+
+## Unreleased
+- lorem ipsum
+
+## Version Carabaffe
+- lorem ipsum
+
+## Version Carapuce
+- lorem ipsum
+- lorem ipsum
+`
+	c, err := ioutil.ReadFile(filepath.Join(repository, "CHANGELOG.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if expected != string(c) {
+		t.Fatalf("Expected %q got %q", expected, c)
 	}
 }

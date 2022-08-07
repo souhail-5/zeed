@@ -26,13 +26,14 @@ Verify your installation by running `zeed --version`.
 - Init Zeed within your project `zeed init`
 - Add an entry `zeed "I am a changelog entry"`
 - Add another entry `zeed "All changelog entries are saved within <your_project_dir>/.zeed/"`
-- Unify the entries `zeed unify`
+- Unify the entries and output the result `zeed unify`
+- Unify then copy/paste the result at a specific location of your changelog file `zeed unify -a "## Releases"`
 - Unify then delete the entries `zeed unify --flush`
 - Copy/Paste the unified entries in your current changelog file
 
 ## Advanced usage
 
-The following sections outline advanced usage topics: weights, channels and templates.
+The following sections outline advanced usage topics: weights, channels, templates and unifying.
 
 ### How to work with weights?
 Weights serve to sort the entries. Each entry is given a weight. The default given weight is `0`. Entries are sorted in descending order.
@@ -96,6 +97,14 @@ templates:
     {{- end}}
     {{end -}}
 ```
+
+### How to update your changelog file?
+When you unify your entries you can choose to put them on your changelog file directly at a specific location by using the `--aline` (or `-a`) and/or `--bline` (or `-b`) options.
+
+Examples:
+- `zeed unify --aline "## Unreleased"` unifies your entries, then adds them on a new line after the first line containing "## Unreleased".
+- `zeed unify --bline "## Version "` unifies your entries, then adds them on a new line before the first line containing "## Version ".
+- `zeed unify --aline "## Unreleased" --bline "## "` unifies your entries, then replaces text between the line containing "## Unreleased" and the following line containing "## ".
 
 ## Contributing
 
