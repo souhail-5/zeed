@@ -36,8 +36,8 @@ func init() {
 	unifyCmd.Flags().StringVarP(&bline, "bline", "b", "", "the line before which the unified entries will be pasted")
 	unifyCmd.Flags().StringVar(&changelogFn, "changelog", "CHANGELOG.md", "changelog filename (default: CHANGELOG.md)")
 	if err := viper.BindPFlag("changelog", unifyCmd.Flags().Lookup("changelog")); err != nil {
-		fmt.Println("unable to get changelog config")
-		os.Exit(1)
+		cmdErrInitBus.NewError("unable to get changelog config")
+		return
 	}
 }
 

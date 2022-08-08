@@ -17,10 +17,11 @@ import (
 )
 
 var (
-	isCfgFileLoaded bool
-	verbose         bool
-	repository      string
 	channel         string
+	cmdErrInitBus   = newErrInitBus()
+	isCfgFileLoaded bool
+	repository      string
+	verbose         bool
 	weight          int
 )
 
@@ -39,6 +40,9 @@ to eliminate changelog-related merge conflicts.`,
 		return nil
 	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if cmdErrInitBus.errors != nil {
+			return cmdErrInitBus
+		}
 		if cmd.Use != "init" {
 			if viper.ConfigFileUsed() == "" {
 				return errors.New("zeed needs to be initialized in your repository. See `zeed init --help` for help")
@@ -98,6 +102,9 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	if cmdErrInitBus.errors != nil {
+		return
+	}
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
 	rootCmd.Flags().StringVarP(&channel, "channel", "c", "default", "entry's channel")
@@ -111,8 +118,8 @@ func initConfig() {
 	} else {
 		wd, err := os.Getwd()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			cmdErrInitBus.AppendError(err)
+			return
 		}
 		repository = wd
 		searchPath := wd
