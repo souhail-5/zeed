@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	aline string
-	bline string
+	aline       string
+	bline       string
+	changelogFn string
 )
 
 var unifyCmd = &cobra.Command{
@@ -33,6 +34,11 @@ func init() {
 	unifyCmd.Flags().StringP("template", "t", "default", "unify template")
 	unifyCmd.Flags().StringVarP(&aline, "aline", "a", "", "the line after which the unified entries will be pasted")
 	unifyCmd.Flags().StringVarP(&bline, "bline", "b", "", "the line before which the unified entries will be pasted")
+	unifyCmd.Flags().StringVar(&changelogFn, "changelog", "CHANGELOG.md", "changelog filename (default: CHANGELOG.md)")
+	if err := viper.BindPFlag("changelog", unifyCmd.Flags().Lookup("changelog")); err != nil {
+		fmt.Println("unable to get changelog config")
+		os.Exit(1)
+	}
 }
 
 func unifyRun(cmd *cobra.Command, _ []string) error {
@@ -66,7 +72,7 @@ func unifyRun(cmd *cobra.Command, _ []string) error {
 		return errors.New("unable to unify")
 	}
 
-	err = uChangelog(filepath.Join(repository, "CHANGELOG.md"), unifiedText.String(), aline, bline)
+	err = uChangelog(changelogFile(), unifiedText.String(), aline, bline)
 	if err != nil {
 		return err
 	}
@@ -181,4 +187,8 @@ func entries(files []*os.File) ([]*changelog.Entry, map[string]changelog.Channel
 	}
 
 	return entries, channels
+}
+
+func changelogFile() string {
+	return filepath.Join(repository, changelogFn)
 }

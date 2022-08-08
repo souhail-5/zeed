@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
 	"testing"
 )
 
@@ -197,7 +196,7 @@ A short introduction
 - lorem ipsum
 - lorem ipsum
 `
-	c, err := ioutil.ReadFile(filepath.Join(repository, "CHANGELOG.md"))
+	c, err := ioutil.ReadFile(changelogFile())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -253,7 +252,7 @@ A short introduction
 - lorem ipsum
 - lorem ipsum
 `
-	c, err := ioutil.ReadFile(filepath.Join(repository, "CHANGELOG.md"))
+	c, err := ioutil.ReadFile(changelogFile())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -307,7 +306,7 @@ A short introduction
 - lorem ipsum
 - lorem ipsum
 `
-	c, err := ioutil.ReadFile(filepath.Join(repository, "CHANGELOG.md"))
+	c, err := ioutil.ReadFile(changelogFile())
 	if err != nil {
 		t.Fatal(err)
 	}
