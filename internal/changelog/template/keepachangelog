@@ -1,0 +1,36 @@
+{{with .Channels.added -}}
+### Added
+{{range .Entries -}}
+- {{.Text}}
+{{end}}
+{{end -}}
+{{with .Channels.changed -}}
+### Changed
+{{range .Entries -}}
+- {{.Text}}
+{{end}}
+{{end -}}
+{{with .Channels.deprecated -}}
+### Deprecated
+{{range .Entries -}}
+- {{.Text}}
+{{end}}
+{{end -}}
+{{with .Channels.fixed -}}
+### Fixed
+{{range .Entries -}}
+- {{.Text}}
+{{end}}
+{{end -}}
+{{with .Channels.removed -}}
+### Removed
+{{range .Entries -}}
+- {{.Text}}
+{{end}}
+{{end -}}
+{{with .Channels.security -}}
+### Security
+{{range .Entries -}}
+- {{.Text}}
+{{end}}
+{{end -}}

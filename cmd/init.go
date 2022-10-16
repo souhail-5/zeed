@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 var initCmd = &cobra.Command{
@@ -18,26 +19,31 @@ If no repository provided, this command will init zeed in the current directory:
 	1. create .zeed directory inside your repository
 	2. create .zeed.yaml config file inside .zeed
 All files related to zeed will be inside .zeed`,
-	RunE:          initRun,
-	SilenceErrors: true, // errors are handled by cmd.Execute()
+	RunE: initRun,
 }
 
-func initRun(_ *cobra.Command, _ []string) error {
+func initRun(cmd *cobra.Command, _ []string) error {
 	if viper.ConfigFileUsed() != "" {
-		return errors.New(fmt.Sprintf("zeed is already initialized in `%s`", repository))
+		var errs []string
+		errs = append(errs, fmt.Sprintf("zeed is already initialized in `%s`", repository))
+		if err := validateConfig(viper.GetViper()); err != nil {
+			errs = append(errs, err.Error())
+		}
+
+		return errors.New(strings.Join(errs, "\n"))
 	}
 	err := os.MkdirAll(cfgDir(), os.ModePerm)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to create `%s` directory", cfgDir()))
+		return errors.New(fmt.Sprintf("unable to create `%s` directory", cfgDir()))
 	}
 	err = ioutil.WriteFile(cfgFile(), []byte(""), 0644)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to create `%s`", cfgFile()))
+		return errors.New(fmt.Sprintf("unable to create `%s`", cfgFile()))
 	}
 	initConfig()
-	fmt.Println(fmt.Sprintf("Successfully initialized zeed in `%s`", repository))
-	fmt.Println(fmt.Sprintf("A zeed config file was created (`%s`)", cfgFile()))
-	fmt.Println("Edit it according to your needs.")
+	cmd.Println(fmt.Sprintf("Successfully initialized zeed in `%s`", repository))
+	cmd.Println(fmt.Sprintf("A zeed config file was created (`%s`)", cfgFile()))
+	cmd.Println("Edit it according to your needs.")
 
 	return nil
 }
