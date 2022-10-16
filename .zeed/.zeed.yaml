@@ -1,0 +1,7 @@
+channels:
+  - added
+  - changed
+  - deprecated
+  - fixed
+  - removed
+  - security
