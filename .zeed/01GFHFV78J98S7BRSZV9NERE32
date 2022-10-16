@@ -1,0 +1,5 @@
+---
+channel: fixed
+weight: 0
+---
+Limit channel format to [a-z_]
