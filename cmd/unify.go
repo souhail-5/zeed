@@ -179,7 +179,7 @@ func entries(files []*os.File) ([]*changelog.Entry, map[string]changelog.Channel
 		channel.Entries = append(channel.Entries, e)
 		channels[e.FrontMatter.Channel] = channel
 	}
-	sort.Sort(changelog.ByWeight(entries))
+	sort.Sort(changelog.Entries(entries))
 	for _, channel := range channels {
 		sort.Slice(channel.Entries, func(i, j int) bool {
 			return channel.Entries[i].FrontMatter.Weight > channel.Entries[j].FrontMatter.Weight

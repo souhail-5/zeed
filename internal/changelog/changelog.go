@@ -40,11 +40,11 @@ func NewEntry(r io.Reader) (*Entry, error) {
 	}, nil
 }
 
-type ByWeight []*Entry
+type Entries []*Entry
 
-func (entries ByWeight) Len() int      { return len(entries) }
-func (entries ByWeight) Swap(i, j int) { entries[i], entries[j] = entries[j], entries[i] }
-func (entries ByWeight) Less(i, j int) bool {
+func (entries Entries) Len() int      { return len(entries) }
+func (entries Entries) Swap(i, j int) { entries[i], entries[j] = entries[j], entries[i] }
+func (entries Entries) Less(i, j int) bool {
 	return entries[i].FrontMatter.Weight > entries[j].FrontMatter.Weight
 }
 
