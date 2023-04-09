@@ -1,0 +1,5 @@
+---
+channel: changed
+weight: 0
+---
+Renamed `changelog.ByWeight()` to `changelog.Entries()`

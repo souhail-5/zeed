@@ -1,0 +1,5 @@
+---
+channel: fixed
+weight: 0
+---
+Upgrade the go version and dependencies to fix some Dependabot alerts
