@@ -3,8 +3,6 @@ project_name: zeed
 before:
   hooks:
     - go mod download
-    # you may remove this if you don't need go generate
-    - go generate ./...
 builds:
   - env:
       - CGO_ENABLED=0
@@ -18,12 +16,19 @@ builds:
       - arm
       - arm64
 archives:
-  - replacements:
-      darwin: macOS
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+  -
+    name_template: >-
+      {{ .ProjectName }}_
+      {{ .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+    files:
+      - "LICENSE"
+      - "CHANGELOG.md"
+      - "README.md"
+      - "UPGRADE.md"
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
 snapshot:
