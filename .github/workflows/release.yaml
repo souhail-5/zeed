@@ -3,7 +3,12 @@ name: release
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*-release'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'New release tag in format "vX.Y.Z-release" (e.g. v1.0.0-release)'
+        required: true
 
 permissions:
   contents: write
@@ -15,12 +20,32 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
+      - name: Set pre-release tag variable
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            TAG=${{ github.event.inputs.tag }}
+          else
+            TAG=${{ github.ref_name }}
+          fi
+          echo "PRE_RELEASE_TAG=${TAG}" >> $GITHUB_ENV
+      - name: Set release tag variable
+        run: |
+          TAG=$(echo ${{ env.PRE_RELEASE_TAG }} | sed 's/-release$//')
+          echo "RELEASE_TAG=${TAG}" >> $GITHUB_ENV
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Fetch tags
-        run: git fetch --force --tags
+      - name: Configure Git and fetch tags
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git fetch --force --tags
+      - name: Add and push pre-release tag if workflow_dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git tag ${{ env.PRE_RELEASE_TAG }} HEAD
+          git push origin ${{ env.PRE_RELEASE_TAG }}
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
@@ -33,30 +58,35 @@ jobs:
           args: build --clean --single-target -o ./zeed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create tempfile for release notes
+        id: create_tempfile
+        run: |
+          tempfile=$(mktemp)
+          echo "TEMPFILE=$tempfile" >> $GITHUB_ENV
       - name: Add changelog header
         run: |
-          OLD_TAG=$(git describe --abbrev=0 --tags --match '*' ${{ github.ref_name }}^)
-          NEW_TAG=${{ github.ref_name }}
+          OLD_TAG=$(git tag --list 'v*' --exclude '*-*' | tail -n1)
           DATE=$(date +%Y-%m-%d)
-          ENTRY="## [${NEW_TAG}](https://github.com/souhail-5/zeed/compare/${OLD_TAG}...${NEW_TAG}) - ${DATE}"
+          ENTRY=$'\n## ['"${{ env.RELEASE_TAG }}"'](https://github.com/souhail-5/zeed/compare/'"${OLD_TAG}"'...'"${{ env.RELEASE_TAG }}"') - '"${DATE}"
           ./zeed "${ENTRY}" --channel header
-      - name: Update CHANGELOG and generate release notes
-        run: ./zeed unify --template keepachangelog --aline "## \[Unreleased" --bline "## \[" --flush > release_notes.txt
-      - name: Commit, retag and push changes
+      - name: Update CHANGELOG and prepare release notes
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          release_notes=$(./zeed unify --template keepachangelog --aline "## \[Unreleased" --bline "## \[" --flush)
+          echo "$release_notes" > ${{ env.TEMPFILE }}
+      - name: Remove zeed binary
+        run: rm ./zeed
+      - name: Commit changes, add release tag and push
+        run: |
           git add ${{ env.CHANGELOG_FILE }} .zeed
-          git commit -m "Update ${{ env.CHANGELOG_FILE }} and .zeed directory"
-          git tag -d ${{ github.ref_name }}
-          git push origin :${{ github.ref_name }}
-          git tag ${{ github.ref_name }} HEAD
-          git push origin ${{ github.ref_name }}
+          git commit -m "Finalize release ${{ env.RELEASE_TAG }}"
+          git tag ${{ env.RELEASE_TAG }} HEAD
+          git push origin ${{ env.RELEASE_TAG }}
+          git push origin HEAD
       - name: Release
         uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean --release-notes release_notes.txt
+          args: release --clean --release-notes=${{ env.TEMPFILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
