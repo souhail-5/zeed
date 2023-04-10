@@ -3,7 +3,7 @@ name: release
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 permissions:
   contents: write
@@ -33,14 +33,14 @@ jobs:
           args: build --clean --single-target -o ./zeed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Update CHANGELOG
-        run: ./zeed unify -t keepachangelog -a "## [Unreleased]" -b "## ["
+      - name: Update CHANGELOG and generate release notes
+        run: ./zeed unify -t keepachangelog -a "## [Unreleased]" -b "## [" --flush > release_notes.txt
       - name: Commit, retag and push changes
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add ${{ env.CHANGELOG_FILE }}
-          git commit -m "Update ${{ env.CHANGELOG_FILE }}"
+          git add ${{ env.CHANGELOG_FILE }} .zeed
+          git commit -m "Update ${{ env.CHANGELOG_FILE }} and .zeed directory"
           git tag -d ${{ github.ref_name }}
           git push origin :${{ github.ref_name }}
           git tag ${{ github.ref_name }} HEAD
@@ -50,6 +50,6 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean --release-notes <(./zeed unify -t keepachangelog -a "## [Unreleased]" -b "## [" --flush)
+          args: release --clean --release-notes release_notes.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
