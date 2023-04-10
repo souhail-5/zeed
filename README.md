@@ -99,7 +99,7 @@ templates:
 ```
 
 ### How to update your changelog file?
-When you unify your entries you can choose to put them on your changelog file directly at a specific location by using the `--aline` (or `-a`) and/or `--bline` (or `-b`) options.
+When unifying your entries, you have the option to directly place them in your changelog file at a specific location using the `--aline` (or `-a`) and/or `--bline` (or `-b`) options. Be sure to carefully escape the values of these options, as they form part of the built-in Zeed regular expressions that are used to find and insert the unified entries at the correct position within the changelog file.
 
 Examples:
 - `zeed unify --aline "## Unreleased"` unifies your entries, then adds them on a new line after the first line containing "## Unreleased".

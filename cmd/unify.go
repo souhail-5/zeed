@@ -116,7 +116,7 @@ func uChangelog(filename string, unifiedText string, aline string, bline string)
 	if aline != "" || bline != "" {
 		r, err := regexp.Compile(re)
 		if err != nil {
-			return errors.New("unable to compile the regex with aline flag")
+			return errors.New("unable to compile the regex with the provided aline flag or the provided bline flag")
 		}
 		content = r.ReplaceAll(content, repl)
 		err = os.WriteFile(filename, content, 0644)
