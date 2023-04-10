@@ -1,0 +1,55 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+env:
+  CHANGELOG_FILE: CHANGELOG.md
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Fetch tags
+        run: git fetch --force --tags
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: stable
+      - name: Build zeed
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: build --clean --single-target -o ./zeed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update CHANGELOG
+        run: ./zeed unify -t keepachangelog -a "## [Unreleased]" -b "## ["
+      - name: Commit, retag and push changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add ${{ env.CHANGELOG_FILE }}
+          git commit -m "Update ${{ env.CHANGELOG_FILE }}"
+          git tag -d ${{ github.ref_name }}
+          git push origin :${{ github.ref_name }}
+          git tag ${{ github.ref_name }} HEAD
+          git push origin ${{ github.ref_name }}
+      - name: Release
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean --release-notes <(./zeed unify -t keepachangelog -a "## [Unreleased]" -b "## [" --flush)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
