@@ -33,8 +33,15 @@ jobs:
           args: build --clean --single-target -o ./zeed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add changelog header
+        run: |
+          OLD_TAG=$(git describe --abbrev=0 --tags --match 'v*' ${{ github.ref_name }}^)
+          NEW_TAG=${{ github.ref_name }}
+          DATE=$(date +%Y-%m-%d)
+          ENTRY="## [${NEW_TAG}](https://github.com/souhail-5/zeed/compare/${OLD_TAG}...${NEW_TAG}) - ${DATE}"
+          ./zeed "${ENTRY}" --channel header
       - name: Update CHANGELOG and generate release notes
-        run: ./zeed unify -t keepachangelog -a "## [Unreleased]" -b "## [" --flush > release_notes.txt
+        run: ./zeed unify --template keepachangelog --aline "## [Unreleased]" --bline "## [" --flush > release_notes.txt
       - name: Commit, retag and push changes
         run: |
           git config --global user.email "actions@github.com"
