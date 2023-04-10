@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add changelog header
         run: |
-          OLD_TAG=$(git describe --abbrev=0 --tags --match 'v*' ${{ github.ref_name }}^)
+          OLD_TAG=$(git describe --abbrev=0 --tags --match '*' ${{ github.ref_name }}^)
           NEW_TAG=${{ github.ref_name }}
           DATE=$(date +%Y-%m-%d)
           ENTRY="## [${NEW_TAG}](https://github.com/souhail-5/zeed/compare/${OLD_TAG}...${NEW_TAG}) - ${DATE}"
