@@ -1,3 +1,8 @@
+{{with .Channels.header -}}
+{{range .Entries -}}
+{{.Text}}
+{{end}}
+{{end -}}
 {{with .Channels.added -}}
 ### Added
 {{range .Entries -}}
@@ -32,5 +37,10 @@
 ### Security
 {{range .Entries -}}
 - {{.Text}}
+{{end}}
+{{end -}}
+{{with .Channels.footer -}}
+{{range .Entries -}}
+{{.Text}}
 {{end}}
 {{end -}}

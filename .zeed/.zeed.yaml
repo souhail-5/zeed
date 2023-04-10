@@ -1,7 +1,9 @@
 channels:
+  - header
   - added
   - changed
   - deprecated
   - fixed
   - removed
   - security
+  - footer
