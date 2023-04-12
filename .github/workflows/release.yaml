@@ -15,6 +15,7 @@ permissions:
 
 env:
   CHANGELOG_FILE: CHANGELOG.md
+  RELEASE_BRANCH: main
 
 jobs:
   goreleaser:
@@ -81,7 +82,7 @@ jobs:
           git commit -m "Finalize release ${{ env.RELEASE_TAG }}"
           git tag ${{ env.RELEASE_TAG }} HEAD
           git push origin ${{ env.RELEASE_TAG }}
-          git push origin HEAD
+          git push origin HEAD:${{ env.RELEASE_BRANCH }}
       - name: Release
         uses: goreleaser/goreleaser-action@v4
         with:
