@@ -33,7 +33,5 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-SNAPSHOT-{{.ShortCommit}}"
-changelog:
-  skip: true
 release:
   mode: replace
