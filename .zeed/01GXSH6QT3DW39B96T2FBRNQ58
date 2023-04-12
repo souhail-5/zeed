@@ -1,5 +1,0 @@
----
-channel: fixed
-weight: 0
----
-Fix .goreleaser.yml: having changelog.skip set to true was ignoring any changelog files passed via `--release-notes`.
