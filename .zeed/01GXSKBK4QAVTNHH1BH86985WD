@@ -1,0 +1,5 @@
+---
+channel: added
+weight: 0
+---
+Update version number using ldflags during build process.

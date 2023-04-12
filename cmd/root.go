@@ -17,6 +17,7 @@ import (
 )
 
 var (
+	version         = "development" // zeed version, automatically updated by GoReleaser ldflags during build.
 	channel         string
 	cmdErrInitBus   = newErrInitBus()
 	isCfgFileLoaded bool
@@ -28,7 +29,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:     "zeed <entry_text>",
 	Example: "zeed \"Add zeed config to the repository.\" -c added -w 128",
-	Version: "1.0.0-beta",
+	Version: version,
 	Short:   "A tool to eliminate changelog-related merge conflicts",
 	Long: `Zeed is a free and open source tool
 to eliminate changelog-related merge conflicts.`,
