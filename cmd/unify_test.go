@@ -83,10 +83,12 @@ func TestUnifyWithTemplate(t *testing.T) {
 		t.Fatal(err)
 	}
 	expected := `### Added
+
 - My changelog entry #2
 - My changelog entry #1
 
 ### Security
+
 - My changelog entry #3
 
 `
