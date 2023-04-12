@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/souhail-5/zeed/compare/main...develop)
 
+## [1.2.1](https://github.com/souhail-5/zeed/compare/v1.2.0...v1.2.1) - 2023-04-12
+
+### Fixed
+
+- Fix unit tests.
+- Include the base tag in the comparison links in CHANGELOG.md.
+- Update version number using ldflags during build process.
+- Use semantic version in CHANGELOG.md.
+
 ## [1.2.0](https://github.com/souhail-5/zeed/compare/v1.1.0...v1.2.0) - 2023-04-12
 
 ### Added
