@@ -6,6 +6,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/souhail-5/zeed/compare/main...develop)
 
+## [v1.1.0](https://github.com/souhail-5/zeed/compare/...v1.1.0) - 2023-04-12
+
+### Added
+
+- The keepachangelog template accept two new channels: header, footer
+- Add a pull request template
+- Add a Github Action for the release
+
+### Changed
+
+- Add details to README.md for the unify command
+- Modify the keepachangelog template to add line breaks where needed
+- Renamed `changelog.ByWeight()` to `changelog.Entries()`
+- Update GoReleaser configuration file to support their latest version
+
+### Fixed
+
+- Fix an error output for the unify command
+
+### Security
+
+- Upgrade the go version and dependencies to fix some Dependabot alerts
+
 ## [1.0.0](https://github.com/souhail-5/zeed/compare/1.0.0-beta...1.0.0) - 2020-10-17
 ### Added
 - Add a built-in template reproducing the format of keepachangelog.com

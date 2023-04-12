@@ -1,5 +1,0 @@
----
-channel: security
-weight: 0
----
-Upgrade the go version and dependencies to fix some Dependabot alerts

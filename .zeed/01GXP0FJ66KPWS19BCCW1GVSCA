@@ -1,5 +1,0 @@
----
-channel: fixed
-weight: 0
----
-Fix an error output for the unify command

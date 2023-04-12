@@ -1,5 +1,0 @@
----
-channel: added
-weight: 0
----
-The keepachangelog template accept two new channels: header, footer
