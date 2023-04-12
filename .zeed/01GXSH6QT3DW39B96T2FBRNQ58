@@ -2,4 +2,4 @@
 channel: fixed
 weight: 0
 ---
-fix .goreleaser.yml: having changelog.skip set to true was ignoring any changelog files passed via `--release-notes`
+Fix .goreleaser.yml: having changelog.skip set to true was ignoring any changelog files passed via `--release-notes`.
