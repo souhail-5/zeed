@@ -66,9 +66,10 @@ jobs:
           echo "TEMPFILE=$tempfile" >> $GITHUB_ENV
       - name: Add changelog header
         run: |
-          OLD_TAG=$(git tag --list 'v*' --exclude '*-*' | tail -n1)
+          OLD_TAG=$(git tag --list 'v*' | grep -v -- '-.*' | tail -n1)
           DATE=$(date +%Y-%m-%d)
-          ENTRY=$'\n## ['"${{ env.RELEASE_TAG }}"'](https://github.com/souhail-5/zeed/compare/'"${OLD_TAG}"'...'"${{ env.RELEASE_TAG }}"') - '"${DATE}"
+          SEMANTIC_VERSION=$(echo "${{ env.RELEASE_TAG }}" | sed 's/^v//')
+          ENTRY=$'\n## ['"${SEMANTIC_VERSION}"'](https://github.com/souhail-5/zeed/compare/'"${OLD_TAG}"'...'"${{ env.RELEASE_TAG }}"') - '"${DATE}"
           ./zeed "${ENTRY}" --channel header
       - name: Update CHANGELOG and prepare release notes
         run: |

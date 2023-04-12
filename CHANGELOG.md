@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/souhail-5/zeed/compare/main...develop)
 
-## [v1.2.0](https://github.com/souhail-5/zeed/compare/...v1.2.0) - 2023-04-12
+## [1.2.0](https://github.com/souhail-5/zeed/compare/v1.1.0...v1.2.0) - 2023-04-12
 
 ### Added
 
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Missing periods at the end of each change in CHANGELOG.md.
 - Fix .goreleaser.yml: having changelog.skip set to true was ignoring any changelog files passed via `--release-notes`.
 
-## [v1.1.0](https://github.com/souhail-5/zeed/compare/...v1.1.0) - 2023-04-12
+## [1.1.0](https://github.com/souhail-5/zeed/compare/v1.0.0...v1.1.0) - 2023-04-12
 
 ### Added
 
