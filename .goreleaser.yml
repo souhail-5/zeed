@@ -1,4 +1,3 @@
-# Make sure to check the documentation at http://goreleaser.com
 project_name: zeed
 before:
   hooks:
@@ -11,9 +10,7 @@ builds:
       - windows
       - darwin
     goarch:
-      - 386
       - amd64
-      - arm
       - arm64
 archives:
   -
