@@ -3,7 +3,8 @@ before:
   hooks:
     - go mod download
 builds:
-  - env:
+  - id: 'zeed-build-linux-windows'
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -11,7 +12,8 @@ builds:
     goarch:
       - amd64
       - arm64
-  - env:
+  - id: 'zeed-build-darwin'
+    env:
       - CGO_ENABLED=0
     goos:
       - darwin
