@@ -56,6 +56,9 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: stable
+      - name: Install Quill
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/quill/main/install.sh | sh -s -- -b /usr/local/bin
       - name: Build zeed
         uses: goreleaser/goreleaser-action@v4
         with:
@@ -89,9 +92,6 @@ jobs:
           git tag ${{ env.RELEASE_TAG }} HEAD
           git push origin ${{ env.RELEASE_TAG }}
           git push origin HEAD:${{ env.RELEASE_BRANCH }}
-      - name: Install Quill
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/quill/main/install.sh | sh -s -- -b /usr/local/bin
       - name: Release
         uses: goreleaser/goreleaser-action@v4
         with:
