@@ -63,7 +63,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: build --clean --single-target -o ./zeed
+          args: build --debug --clean --single-target -o ./zeed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create tempfile for release notes
