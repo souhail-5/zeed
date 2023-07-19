@@ -1,0 +1,5 @@
+---
+channel: added
+weight: 0
+---
+Add code signing and notarization for macOS builds.

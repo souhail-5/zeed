@@ -1,0 +1,5 @@
+---
+channel: removed
+weight: 0
+---
+Drop the 386 and arm architectures.
