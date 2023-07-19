@@ -63,7 +63,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: build --debug --clean --single-target --skip-post-hooks -o ./zeed
+          args: build --clean --single-target --skip-post-hooks -o ./zeed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create tempfile for release notes
