@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/souhail-5/zeed/compare/main...develop)
 
+## [1.3.0](https://github.com/souhail-5/zeed/compare/v1.2.1...v1.3.0) - 2023-07-19
+
+### Added
+
+- Add code signing and notarization for macOS builds.
+
+### Changed
+
+- Refine README for clarity and brevity.
+
+### Removed
+
+- Drop the 386 and arm architectures.
+
 ## [1.2.1](https://github.com/souhail-5/zeed/compare/v1.2.0...v1.2.1) - 2023-04-12
 
 ### Fixed
