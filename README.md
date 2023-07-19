@@ -3,25 +3,19 @@ Zeed is a free and open source tool to eliminate changelog-related merge conflic
 
 **How it works?** Use Zeed to add any entry to your changelog. Zeed will not modify your changelog file, but save your entries as a file within a staging area. When you are ready, ask Zeed to unify all staged entries, and render them according to a template. Then, automatically (or not) copy/paste the rendering to your changelog file. Finally, use Zeed to delete the staged entries and start over for another release.
 
-**Why Zeed?** Changelog-related merge conflicts can be a significant source of frustration for developers, often discouraging them from maintaining a changelog altogether. Zeed's creation was inspired by these real-life experiences. Similar struggles have been faced even by large teams like GitLab, which [publicly shared their challenges](https://about.gitlab.com/blog/2018/07/03/solving-gitlabs-changelog-conflict-crisis/) with such issues.
+## Why Zeed?
+Changelog-related merge conflicts can be a significant source of frustration for developers, often discouraging them from maintaining a changelog altogether. Zeed's creation was inspired by these real-life experiences. Similar struggles have been faced even by large teams like GitLab, which [publicly shared their challenges](https://about.gitlab.com/blog/2018/07/03/solving-gitlabs-changelog-conflict-crisis/) with such issues.
 
 ## Getting Started
-These instructions will get you Zeed up and running on your local machine.
 
-### Technical prerequisites
-Zeed is written with support for multiple platforms. Zeed currently provides binaries for the following:
+### Download and install
+Zeed supports multiple platforms including macOS (Darwin), Windows, and Linux.
 
-- macOS (Darwin) for x64, i386, and ARM architectures
-- Windows
-- Linux
+To install Zeed, download the appropriate version for your platform from [Zeed Releases](https://github.com/souhail-5/zeed/releases). Once downloaded, the binary can be run from anywhere.
 
-### How to install?
+Ideally, you should install Zeed somewhere in your `PATH` for easy use. `/usr/local/bin` is the most probable location.
 
-Download the appropriate version for your platform from [Zeed Releases](https://github.com/souhail-5/zeed/releases). Once downloaded, the binary can be run from anywhere.
-
-Ideally, you should install it somewhere in your `PATH` for easy use. `/usr/local/bin` is the most probable location.
-
-Verify your installation by running `zeed --version`.
+You can verify your installation by running `zeed --version`.
 
 ## Basic usage
 
