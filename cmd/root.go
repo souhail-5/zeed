@@ -1,33 +1,26 @@
 package cmd
 
 import (
-	"crypto/rand"
 	"errors"
 	"fmt"
-	"github.com/oklog/ulid/v2"
 	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
-	"time"
 )
 
 var (
-	channel         string
 	cmdErrInitBus   = newErrInitBus()
 	isCfgFileLoaded bool
 	repository      string
 	verbose         bool
-	weight          int
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "zeed <entry_text>",
-	Example: "zeed \"Add zeed config to the repository.\" -c added -w 128",
+	Use:     "zeed add <entry_text>",
+	Example: "zeed add \"Add zeed config to the repository.\" -c added -w 128",
 	Short:   "A tool to eliminate changelog-related merge conflicts",
 	Long: `Zeed is a free and open source tool
 to eliminate changelog-related merge conflicts.`,
@@ -81,20 +74,6 @@ func rootRun(_ *cobra.Command, args []string) error {
 	return save(&entry)
 }
 
-func save(entry *changelog.Entry) error {
-	id, err := ulid.New(ulid.Timestamp(time.Now()), rand.Reader)
-	if err != nil {
-		return err
-	}
-	filePath := filepath.Join(repository, ".zeed", id.String())
-	yml, err := yaml.Marshal(&entry.FrontMatter)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filePath, []byte(fmt.Sprintf("---\n%s---\n%s", yml, entry.Text)), 0644)
-}
-
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -110,8 +89,6 @@ func init() {
 	}
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&repository, "repository", "", "path to your project's repository")
-	rootCmd.Flags().StringVarP(&channel, "channel", "c", "default", "entry's channel")
-	rootCmd.Flags().IntVarP(&weight, "weight", "w", 0, "entry's weight")
 }
 
 // initConfig reads in config file and ENV variables if set.
