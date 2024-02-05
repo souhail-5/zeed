@@ -3,6 +3,7 @@ package changelog
 import (
 	"embed"
 	"errors"
+	"fmt"
 	"github.com/adrg/frontmatter"
 	"github.com/spf13/viper"
 	"io"
@@ -49,9 +50,13 @@ func (entries Entries) Less(i, j int) bool {
 }
 
 func (e Entry) Validate(viper *viper.Viper) (ok bool, err error) {
+	if e.Text == "" {
+		return false, errors.New("entry's text must not be empty")
+	}
+
 	channels := viper.GetStringSlice("channels")
 	if len(channels) != 0 && !Contains(channels, e.FrontMatter.Channel) {
-		return false, errors.New("channel's entry must be part of configured channels")
+		return false, errors.New(fmt.Sprintf("entry's channel must be part of configured channels; channel (\"%s\") is not supported", e.FrontMatter.Channel))
 	}
 
 	return true, nil
