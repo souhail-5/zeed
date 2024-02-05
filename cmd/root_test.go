@@ -19,6 +19,8 @@ func TestNotInitializedProject(t *testing.T) {
 
 func TestInvalidCfgFile(t *testing.T) {
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte("invalid\nyaml"))
 	rootCmd.SetArgs([]string{"My changelog entry"})
@@ -48,6 +50,8 @@ func TestInvalidChannelFormat(t *testing.T) {
 func TestUnconfiguredChannel(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte("channels: ['feature', 'bugfix']"))
 	rootCmd.SetArgs([]string{"My changelog entry", "-c", "support"})
@@ -64,6 +68,8 @@ func TestUnconfiguredChannel(t *testing.T) {
 func TestInvalidTemplateFormat(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte(`templates:
   bad-f0rmAt: "{{range .Entries}}- {{.Text}}\n{{end}}"

@@ -9,6 +9,8 @@ import (
 
 func TestUnify(t *testing.T) {
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	bufferString := bytes.NewBufferString("")
 	rootCmd.SetOut(bufferString)
@@ -51,6 +53,8 @@ func TestUnify(t *testing.T) {
 func TestUnifyWithTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte("channels: [added, security]"))
 	bufferString := bytes.NewBufferString("")
@@ -100,6 +104,8 @@ func TestUnifyWithTemplate(t *testing.T) {
 func TestUnifyWithConfiguredTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte(`templates:
   default: "{{range .Entries}}• {{.Text}}\n{{end}}"
@@ -139,6 +145,8 @@ func TestUnifyWithConfiguredTemplate(t *testing.T) {
 func TestUnifyWithUnconfiguredTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	rootCmd.SetArgs([]string{"unify", "-t", "slack"})
 	err := rootCmd.Execute()
@@ -154,6 +162,8 @@ func TestUnifyWithUnconfiguredTemplate(t *testing.T) {
 func TestUnifyAline(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeChangelogFile(t, []byte(`# Changelog
 A short introduction
@@ -210,6 +220,8 @@ A short introduction
 func TestUnifyBline(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeChangelogFile(t, []byte(`# Changelog
 A short introduction
@@ -266,6 +278,8 @@ A short introduction
 func TestUnifyAlineBline(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeChangelogFile(t, []byte(`# Changelog
 A short introduction

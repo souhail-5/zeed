@@ -17,8 +17,6 @@ func initRepository(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	writeCfgFile(t, []byte(""))
-	writeChangelogFile(t, []byte(""))
 }
 
 func writeCfgFile(t *testing.T, data []byte) {

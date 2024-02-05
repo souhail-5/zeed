@@ -10,6 +10,8 @@ import (
 
 func TestAlreadyInitializedProject(t *testing.T) {
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	rootCmd.SetArgs([]string{"init", repository})
 	if err := rootCmd.Execute(); err != nil {
@@ -43,6 +45,8 @@ func TestAlreadyInitializedProject(t *testing.T) {
 
 func TestAlreadyInitializedProjectWithInvalidChannelFormat(t *testing.T) {
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte("channels:\n  - bad-f0rmAt"))
 	rootCmd.SetArgs([]string{"init", repository})
@@ -58,6 +62,8 @@ func TestAlreadyInitializedProjectWithInvalidChannelFormat(t *testing.T) {
 
 func TestAlreadyInitializedProjectWithInvalidTemplateFormat(t *testing.T) {
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte(`templates:
   bad-f0rmAt: "{{range .Entries}}- {{.Text}}\n{{end}}"
