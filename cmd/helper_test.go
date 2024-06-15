@@ -13,7 +13,11 @@ func initRepository(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = os.MkdirAll(cfgDir(), os.ModePerm)
+	createTempRepo(t)
+}
+
+func createTempRepo(t *testing.T) {
+	err := os.MkdirAll(cfgDir(), os.ModePerm)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,6 +49,9 @@ func resetFlags() {
 		flag.Value.Set(flag.DefValue)
 	})
 	unifyCmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
+		flag.Value.Set(flag.DefValue)
+	})
+	addCmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
 		flag.Value.Set(flag.DefValue)
 	})
 }
