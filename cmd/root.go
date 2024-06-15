@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -19,24 +18,15 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "zeed add <entry_text>",
-	Example: "zeed add \"Add zeed config to the repository.\" -c added -w 128",
-	Short:   "A tool to eliminate changelog-related merge conflicts",
-	Long: `Zeed is a free and open source tool
-to eliminate changelog-related merge conflicts.`,
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) != 1 {
-			cmd.SilenceUsage = false
-			return fmt.Errorf("accepts %d arg(s), received %d", 1, len(args))
-		}
-		return nil
-	},
+	Use:   "zeed",
+	Short: "A tool to eliminate changelog-related merge conflicts.",
+	Long:  `Zeed is a free and open source tool to eliminate changelog-related merge conflicts.`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if cmdErrInitBus.errors != nil {
 			return cmdErrInitBus
 		}
 		if cmd.Use != "init" {
-			if viper.ConfigFileUsed() == "" {
+			if repository == "" || viper.ConfigFileUsed() == "" {
 				return errors.New("zeed needs to be initialized in your repository. See `zeed init --help` for help")
 			} else if !isCfgFileLoaded {
 				return errors.New("unable to read your config file")
@@ -50,28 +40,15 @@ to eliminate changelog-related merge conflicts.`,
 
 		return nil
 	},
-	RunE:         rootRun,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("Running for:", repository)
+		return nil
+	},
 	SilenceUsage: true,
 }
 
 func SetVersion(v string) {
 	rootCmd.Version = v
-}
-
-func rootRun(_ *cobra.Command, args []string) error {
-	entry := changelog.Entry{
-		FrontMatter: changelog.FrontMatter{
-			Channel: channel,
-			Weight:  weight,
-		},
-		Text: args[0],
-	}
-
-	if _, err := entry.Validate(viper.GetViper()); err != nil {
-		return errors.New(fmt.Sprintf("provided channel (\"%s\") is not supported", entry.FrontMatter.Channel))
-	}
-
-	return save(&entry)
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
