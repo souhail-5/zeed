@@ -13,7 +13,7 @@ import (
 var Templates embed.FS
 
 type FrontMatter struct {
-	Channel string `yaml:"channel"`
+	Channel string `yaml:"channel,omitempty"`
 	Weight  int    `yaml:"weight"`
 }
 
@@ -55,7 +55,7 @@ func (e Entry) Validate(viper *viper.Viper) (ok bool, err error) {
 	}
 
 	channels := viper.GetStringSlice("channels")
-	if len(channels) != 0 && !Contains(channels, e.FrontMatter.Channel) {
+	if e.FrontMatter.Channel != "" && len(channels) != 0 && !Contains(channels, e.FrontMatter.Channel) {
 		return false, errors.New(fmt.Sprintf("entry's channel must be part of configured channels; channel (\"%s\") is not supported", e.FrontMatter.Channel))
 	}
 

@@ -28,7 +28,6 @@ func TestAdd(t *testing.T) {
 		t.Fatal(err)
 	}
 	expectedContent := `---
-channel: default
 weight: 0
 ---
 My changelog entry`

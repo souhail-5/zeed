@@ -60,6 +60,6 @@ func save(entry *changelog.Entry) error {
 func init() {
 	rootCmd.AddCommand(addCmd)
 	addCmd.Flags().StringVarP(&text, "text", "t", "", "entry's text")
-	addCmd.Flags().StringVarP(&channel, "channel", "c", "default", "entry's channel")
+	addCmd.Flags().StringVarP(&channel, "channel", "c", "", "entry's channel")
 	addCmd.Flags().IntVarP(&weight, "weight", "w", 0, "entry's weight")
 }
