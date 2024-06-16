@@ -77,7 +77,7 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           SEMANTIC_VERSION=$(echo "${{ env.RELEASE_TAG }}" | sed 's/^v//')
           ENTRY=$'\n## ['"${SEMANTIC_VERSION}"'](https://github.com/souhail-5/zeed/compare/'"${OLD_TAG}"'...'"${{ env.RELEASE_TAG }}"') - '"${DATE}"
-          ./zeed "${ENTRY}" --channel header
+          ./zeed add --text "${ENTRY}" --channel header
       - name: Update CHANGELOG and prepare release notes
         run: |
           release_notes=$(./zeed unify --template keepachangelog --aline "## \[Unreleased" --bline "## \[" --flush)
