@@ -1,0 +1,5 @@
+---
+channel: fixed
+weight: 0
+---
+Replace html/template with text/template for the unify process.

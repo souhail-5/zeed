@@ -7,12 +7,12 @@ import (
 	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"html/template"
 	"io"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
+	"text/template"
 )
 
 var (
@@ -165,7 +165,7 @@ func entries(files []*os.File) ([]*changelog.Entry, map[string]changelog.Channel
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		if !changelog.Contains(cc, e.FrontMatter.Channel) && e.FrontMatter.Channel != "default" {
+		if !changelog.Contains(cc, e.FrontMatter.Channel) && e.FrontMatter.Channel != "" {
 			fmt.Println("entry \"" + file.Name() + "\" was not processed: its channel is not supported")
 			continue
 		}

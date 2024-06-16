@@ -1,7 +1,10 @@
 # Zeed
 Zeed is a free and open source tool to eliminate changelog-related merge conflicts. Team collaboration and continuous integration will be easier.
 
-**How it works?** Use Zeed to add any entry to your changelog. Zeed will not modify your changelog file, but save your entries as a file within a staging area. When you are ready, ask Zeed to unify all staged entries, and render them according to a template. Then, automatically (or not) copy/paste the rendering to your changelog file. Finally, use Zeed to delete the staged entries and start over for another release.
+**How it works?**
+1. Use Zeed to add any entry to your changelog. Zeed will not modify your changelog file, but save your entries as a file within a staging area.
+2. When you are ready, ask Zeed to unify all staged entries, and render them according to a template.
+3. Finally, use Zeed to delete the staged entries and start over for another release.
 
 ## Why Zeed?
 Changelog-related merge conflicts can be a significant source of frustration for developers, often discouraging them from maintaining a changelog altogether. Zeed's creation was inspired by these real-life experiences. Similar struggles have been faced even by large teams like GitLab, which [publicly shared their challenges](https://about.gitlab.com/blog/2018/07/03/solving-gitlabs-changelog-conflict-crisis/) with such issues.
@@ -19,51 +22,59 @@ You can verify your installation by running `zeed --version`.
 
 ## Basic usage
 
-- Init Zeed within your project `zeed init`
-- Add an entry `zeed "I am a changelog entry"`
-- Add another entry `zeed "All changelog entries are saved within <your_project_dir>/.zeed/"`
-- Unify the entries and output the result `zeed unify`
-- Unify then copy/paste the result at a specific location of your changelog file `zeed unify -a "## Releases"`
-- Unify then delete the entries `zeed unify --flush`
-- Copy/Paste the unified entries in your current changelog file
+- Init Zeed within your project:
+  - `zeed init`
+- Add entries:
+  - `zeed add -t "I am a changelog entry"`
+  - `zeed add -t "All changelog entries are saved within <your_project_dir>/.zeed"`
+- Unify the entries:
+  - `zeed unify`, will output the result
+- Delete the entries:
+  - `zeed unify --flush`, will output the result and delete the entries
 
 ## Advanced usage
 
 The following sections outline advanced usage topics: weights, channels, templates and unifying.
 
 ### How to work with weights?
-Weights serve to sort the entries. Each entry is given a weight. The default given weight is `0`. Entries are sorted in descending order.
+Weights serve to sort the entries:
+- Each entry is given a weight.
+- The default given weight is `0`.
+- Entries are sorted in descending order.
 
-To give a specific weight to an entry, set the `--weight` (or `-w`) option when adding an entry: `zeed "I am a changelog entry" --weight 64`.
+To give a specific weight to an entry, set the `--weight` (or `-w`) option when adding an entry:
+- `zeed "I am a changelog entry" --weight 64`.
 
 ### How to work with channels?
-Channels serve to group the entries. Each entry is attached to a channel. The default attached channel is `default`.
+Channels serve to group the entries:
+- Each entry can be attached to a channel.
+- By default, entries are not attached to any channel.
+- Only channels supported by your project are allowed.
 
-To attach a specific channel to an entry, set the `--channel` (or `-c`) option when adding an entry: `zeed "I am a changelog entry" --channel name_of_your_channel`. Only channels supported by your project are allowed.
+To attach a specific channel to an entry, set the `--channel` (or `-c`) option when adding an entry:
+- `zeed "I am a changelog entry" --channel name_of_your_channel`.
 
 #### How to add your own channel?
 To add support for a channel in your project, edit `.zeed/.zeed.yaml` file that way:
 ``` yaml
 channels:
-  - added
-  - changed
-  - deprecated
-  - fixed
-  - removed
-  - security
   - name_of_your_channel # Only a-z and _ are allowed
 ```
 
 Channels serve to group the entries, so it will be useful for templates.
 
+Zeed comes with built-in allowed channels that are necessary for built-in templates.
+
 ### How to work with templates?
-Templates serve to customize the rendering of the unified entries. The template used by default is `default`.
+Templates serve to customize the rendering of the unified entries:
+- The template used by default is `default`.
+- Zeed comes with built-in allowed templates:
+  - `default`: one line for each entry
+  - `keepachangelog`: compliant with the [keepachangelog.com](https://keepachangelog.com/) format
+- Only templates supported by your project are allowed.
 
-To unify the entries with a specific template, set the `--template` (or `-t`) option when unifying the entries: `zeed unify --template name_of_the_template`. Only templates supported by your project are allowed.
-
-Zeed comes with built-in allowed templates:
-- `default`: one line for each entry
-- `keepachangelog`: compliant with the [keepachangelog.com](https://keepachangelog.com/) format
+To unify the entries with a specific template, set the `--template` (or `-t`) option when unifying the entries:
+- `zeed unify --template name_of_the_template`.
 
 #### How to add your own template?
 Templates must use [Go templating engine](https://golang.org/pkg/text/template/). They have access to these data :
@@ -85,7 +96,7 @@ templates:
     {{end}}
   name_of_the_template: |
     {{range .Entries -}}
-    {{- if eq .FrontMatter.Channel "default" -}}
+    {{- if eq .FrontMatter.Channel "" -}}
     - {{.Text}} ({{.FrontMatter.Weight}})
     {{- end}}
     {{- if eq .FrontMatter.Channel "added" -}}

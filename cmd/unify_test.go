@@ -8,15 +8,18 @@ import (
 )
 
 func TestUnify(t *testing.T) {
+	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	bufferString := bytes.NewBufferString("")
 	rootCmd.SetOut(bufferString)
-	rootCmd.SetArgs([]string{"My changelog entry #1"})
+	rootCmd.SetArgs([]string{"add", "-t", "My changelog entry #1"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	rootCmd.SetArgs([]string{"My changelog entry #2", "-w", fmt.Sprintf("%d", 32)})
+	rootCmd.SetArgs([]string{"add", "-t", "My changelog entry #2", "-w", fmt.Sprintf("%d", 32)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
@@ -51,15 +54,19 @@ func TestUnify(t *testing.T) {
 func TestUnifyWithTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte("channels: [added, security]"))
 	bufferString := bytes.NewBufferString("")
 	rootCmd.SetOut(bufferString)
-	rootCmd.SetArgs([]string{"My changelog entry #1", "-c", "added"})
+	rootCmd.SetArgs([]string{"add", "-t", "My changelog entry #1", "-c", "added"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
 	rootCmd.SetArgs([]string{
+		"add",
+		"-t",
 		"My changelog entry #2",
 		"-w",
 		fmt.Sprintf("%d", 32),
@@ -69,7 +76,7 @@ func TestUnifyWithTemplate(t *testing.T) {
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	rootCmd.SetArgs([]string{"My changelog entry #3", "-c", "security"})
+	rootCmd.SetArgs([]string{"add", "-t", "My changelog entry #3", "-c", "security"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
@@ -100,21 +107,23 @@ func TestUnifyWithTemplate(t *testing.T) {
 func TestUnifyWithConfiguredTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeCfgFile(t, []byte(`templates:
   default: "{{range .Entries}}• {{.Text}}\n{{end}}"
 `))
 	bufferString := bytes.NewBufferString("")
 	rootCmd.SetOut(bufferString)
-	rootCmd.SetArgs([]string{"My changelog entry #1"})
+	rootCmd.SetArgs([]string{"add", "-t", "My changelog entry #1"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	rootCmd.SetArgs([]string{"My changelog entry #2", "-w", fmt.Sprintf("%d", 32)})
+	rootCmd.SetArgs([]string{"add", "-t", "My changelog entry #2", "-w", fmt.Sprintf("%d", 32)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	rootCmd.SetArgs([]string{"My changelog entry #3", "-w", fmt.Sprintf("%d", 16)})
+	rootCmd.SetArgs([]string{"add", "-t", "My changelog entry #3", "-w", fmt.Sprintf("%d", 16)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
@@ -139,6 +148,8 @@ func TestUnifyWithConfiguredTemplate(t *testing.T) {
 func TestUnifyWithUnconfiguredTemplate(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	rootCmd.SetArgs([]string{"unify", "-t", "slack"})
 	err := rootCmd.Execute()
@@ -154,6 +165,8 @@ func TestUnifyWithUnconfiguredTemplate(t *testing.T) {
 func TestUnifyAline(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeChangelogFile(t, []byte(`# Changelog
 A short introduction
@@ -165,17 +178,12 @@ A short introduction
 - lorem ipsum
 - lorem ipsum
 `))
-	rootCmd.SetArgs([]string{"--", "- lorem ipsum"})
+	rootCmd.SetArgs([]string{"add", "-t", "- lorem ipsum"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
 
-	rootCmd.SetArgs([]string{"## Version Tortank", "-w", fmt.Sprintf("%d", 32)})
-	if err := rootCmd.Execute(); err != nil {
-		t.Fatal(err)
-	}
-
-	rootCmd.SetArgs([]string{"", "-w", fmt.Sprintf("%d", 64)})
+	rootCmd.SetArgs([]string{"add", "-t", "\n## Version Tortank", "-w", fmt.Sprintf("%d", 32)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
@@ -210,6 +218,8 @@ A short introduction
 func TestUnifyBline(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeChangelogFile(t, []byte(`# Changelog
 A short introduction
@@ -221,22 +231,17 @@ A short introduction
 - lorem ipsum
 - lorem ipsum
 `))
-	rootCmd.SetArgs([]string{"--", "- lorem ipsum"})
+	rootCmd.SetArgs([]string{"add", "-t", "- lorem ipsum"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
 
-	rootCmd.SetArgs([]string{"## Version Tortank", "-w", fmt.Sprintf("%d", 32)})
+	rootCmd.SetArgs([]string{"add", "-t", "\n## Version Tortank", "-w", fmt.Sprintf("%d", 32)})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
 
-	rootCmd.SetArgs([]string{"", "-w", fmt.Sprintf("%d", -32)})
-	if err := rootCmd.Execute(); err != nil {
-		t.Fatal(err)
-	}
-
-	rootCmd.SetArgs([]string{"unify", "-b", "## Version"})
+	rootCmd.SetArgs([]string{"unify", "-b", "\n## Version"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
@@ -266,6 +271,8 @@ A short introduction
 func TestUnifyAlineBline(t *testing.T) {
 	resetFlags()
 	initRepository(t)
+	writeCfgFile(t, []byte(""))
+	writeChangelogFile(t, []byte(""))
 	defer removeRepository(t)
 	writeChangelogFile(t, []byte(`# Changelog
 A short introduction
@@ -280,17 +287,12 @@ Nothing here.
 - lorem ipsum
 - lorem ipsum
 `))
-	rootCmd.SetArgs([]string{"--", "- lorem ipsum"})
+	rootCmd.SetArgs([]string{"add", "-t", "- lorem ipsum"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}
 
-	rootCmd.SetArgs([]string{"", "-w", fmt.Sprintf("%d", -32)})
-	if err := rootCmd.Execute(); err != nil {
-		t.Fatal(err)
-	}
-
-	rootCmd.SetArgs([]string{"unify", "-a", "## Unreleased", "-b", "## Version"})
+	rootCmd.SetArgs([]string{"unify", "-a", "## Unreleased", "-b", "\n## Version"})
 	if err := rootCmd.Execute(); err != nil {
 		t.Fatal(err)
 	}

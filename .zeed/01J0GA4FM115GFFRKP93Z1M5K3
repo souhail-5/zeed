@@ -1,0 +1,5 @@
+---
+channel: changed
+weight: 0
+---
+The channel field was automatically set to "default". Now, it is left empty by default.
