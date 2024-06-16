@@ -78,6 +78,9 @@ jobs:
           SEMANTIC_VERSION=$(echo "${{ env.RELEASE_TAG }}" | sed 's/^v//')
           ENTRY=$'\n## ['"${SEMANTIC_VERSION}"'](https://github.com/souhail-5/zeed/compare/'"${OLD_TAG}"'...'"${{ env.RELEASE_TAG }}"') - '"${DATE}"
           ./zeed add --text "${ENTRY}" --channel header
+      - name: Update Unreleased URL
+        run: |
+          sed -i "s|\(Unreleased.*souhail-5/zeed/compare/\).*|\1${{ env.RELEASE_TAG }}...main)|" CHANGELOG.md
       - name: Update CHANGELOG and prepare release notes
         run: |
           release_notes=$(./zeed unify --template keepachangelog --aline "## \[Unreleased" --bline "## \[" --flush)
