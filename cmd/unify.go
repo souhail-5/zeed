@@ -7,12 +7,12 @@ import (
 	"github.com/souhail-5/zeed/internal/changelog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"html/template"
 	"io"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
+	"text/template"
 )
 
 var (
