@@ -89,9 +89,10 @@ jobs:
         run: rm ./zeed
       - name: Commit changes, add release tag and push
         run: |
+          SEMANTIC_VERSION=$(echo "${{ env.RELEASE_TAG }}" | sed 's/^v//')
           git add ${{ env.CHANGELOG_FILE }} .zeed
           git commit -m "Finalize release ${{ env.RELEASE_TAG }}"
-          git tag ${{ env.RELEASE_TAG }} HEAD
+          git tag -a -m "Version ${SEMANTIC_VERSION}" ${{ env.RELEASE_TAG }} HEAD
           git push origin ${{ env.RELEASE_TAG }}
           git push origin HEAD:${{ env.RELEASE_BRANCH }}
       - name: Release
