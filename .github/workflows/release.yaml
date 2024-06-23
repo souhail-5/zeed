@@ -59,7 +59,7 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/quill/main/install.sh | sh -s -- -b /usr/local/bin
       - name: Build zeed
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: "~> v2"
