@@ -62,8 +62,8 @@ jobs:
         uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
-          version: latest
-          args: build --clean --single-target --id zeed-build-linux-windows --skip-post-hooks -o ./zeed
+          version: "~> v2"
+          args: build --clean --single-target --id zeed-build-linux-windows --skip=post-hooks -o ./zeed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create tempfile for release notes
