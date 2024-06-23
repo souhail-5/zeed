@@ -96,7 +96,7 @@ jobs:
           git push origin ${{ env.RELEASE_TAG }}
           git push origin HEAD:${{ env.RELEASE_BRANCH }}
       - name: Release
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest
