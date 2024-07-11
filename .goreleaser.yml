@@ -22,16 +22,6 @@ builds:
     goarch:
       - amd64
       - arm64
-    hooks:
-      post:
-        # The binary is signed and notarized when running a production release, but for snapshot builds notarization is
-        # skipped and only ad-hoc signing is performed (not cryptographic material is needed).
-        #
-        # note: environment variables required for signing and notarization (set in CI) but are not needed for snapshot builds
-        #    QUILL_SIGN_P12, QUILL_NOTARY_KEY, QUILL_NOTARY_KEY_ID, QUILL_NOTARY_ISSUER
-        - cmd: quill sign-and-notarize "{{ .Path }}" --dry-run={{ .IsSnapshot }} --ad-hoc={{ .IsSnapshot }} -vv
-          env:
-            - QUILL_LOG_FILE=/tmp/quill-{{ .Target }}.log
 archives:
   -
     name_template: >-
@@ -52,3 +42,17 @@ snapshot:
   name_template: "{{ .Tag }}-SNAPSHOT-{{.ShortCommit}}"
 release:
   mode: replace
+notarize:
+  macos:
+    -
+      enabled: '{{ isEnvSet "APPLE_SIGN_P12" }}'
+      ids:
+        - zeed-build-darwin
+      sign:
+        certificate: "{{ .Env.APPLE_SIGN_P12 }}"
+        password: "{{ .Env.APPLE_SIGN_P12_PASSWORD }}"
+      notarize:
+        issuer_id: "{{ .Env.APPLE_NOTARY_ISSUER }}"
+        key_id: "{{ .Env.APPLE_NOTARY_KEY_ID }}"
+        key: "{{ .Env.APPLE_NOTARY_KEY }}"
+        wait: false
