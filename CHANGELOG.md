@@ -4,7 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/souhail-5/zeed/compare/v1.3.0...main)
+## [Unreleased](https://github.com/souhail-5/zeed/compare/v2.0.0...main)
+
+## [2.0.0](https://github.com/souhail-5/zeed/compare/v1.3.0...v2.0.0) - 2024-07-11
+
+### Added
+
+- Add release deployment instructions to CONTRIBUTING.md.
+- Add the `add` subcommand.
+
+### Changed
+
+- Entry's text must not be empty.
+- The channel field was automatically set to "default". Now, it is left empty by default.
+- Update and refine README for clarity and accuracy.
+
+### Fixed
+
+- Replace html/template with text/template for the unify process.
+- Fix goreleaser implementation by supporting the new goreleaser v2
+- Fix the Unreleased URL on CHANGELOG.md.
 
 ## [1.3.0](https://github.com/souhail-5/zeed/compare/v1.2.1...v1.3.0) - 2023-07-19
 
