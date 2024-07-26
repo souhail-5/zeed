@@ -6,6 +6,8 @@ Zeed is a free and open source tool to eliminate changelog-related merge conflic
 2. When you are ready, ask Zeed to unify all staged entries, and render them according to a template.
 3. Finally, use Zeed to delete the staged entries and start over for another release.
 
+![Diagram of how Zeed works.](diagram-how-zeed-works.png)
+
 ## Why Zeed?
 Changelog-related merge conflicts can be a significant source of frustration for developers, often discouraging them from maintaining a changelog altogether. Zeed's creation was inspired by these real-life experiences. Similar struggles have been faced even by large teams like GitLab, which [publicly shared their challenges](https://about.gitlab.com/blog/2018/07/03/solving-gitlabs-changelog-conflict-crisis/) with such issues.
 
